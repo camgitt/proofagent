@@ -3,7 +3,7 @@ requires = ["setuptools>=64.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "provably"
+name = "proofagent"
 dynamic = ["version"]
 description = "pytest for AI agents — eval framework with cryptographic compliance certificates"
 readme = "README.md"
