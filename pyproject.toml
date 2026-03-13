@@ -1,0 +1,53 @@
+[build-system]
+requires = ["setuptools>=64.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "provably"
+dynamic = ["version"]
+description = "pytest for AI agents — eval framework with cryptographic compliance certificates"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+authors = [{name = "Provably"}]
+keywords = ["ai", "agents", "eval", "testing", "llm", "safety", "compliance"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "click>=8.0",
+    "python-dotenv>=1.0",
+]
+
+[project.optional-dependencies]
+openai = ["openai>=1.0"]
+anthropic = ["anthropic>=0.30"]
+ollama = ["ollama>=0.3"]
+all = ["openai>=1.0", "anthropic>=0.30", "ollama>=0.3"]
+dev = ["pytest>=8.0", "pytest-mock"]
+
+[project.scripts]
+provably = "provably.cli:cli"
+
+[project.entry-points."pytest11"]
+provably = "provably.plugin"
+
+[project.urls]
+Homepage = "https://github.com/provably-ai/provably"
+Documentation = "https://github.com/provably-ai/provably"
+Repository = "https://github.com/provably-ai/provably"
+
+[tool.setuptools]
+packages = {find = {where = ["src"]}}
+
+[tool.setuptools.dynamic]
+version = {attr = "provably.__version__.__version__"}
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
