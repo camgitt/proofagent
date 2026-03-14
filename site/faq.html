@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>FAQ — proofagent</title>
+<meta name="description" content="Frequently asked questions about proofagent — the open-source pytest plugin for testing AI agents.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: oklch(0.145 0.012 255);
+    --bg-raised: oklch(0.175 0.014 255);
+    --bg-inset: oklch(0.125 0.01 255);
+    --border: oklch(0.26 0.012 255);
+    --border-subtle: oklch(0.22 0.01 255);
+    --text: oklch(0.92 0.008 255);
+    --text-2: oklch(0.68 0.01 255);
+    --text-3: oklch(0.48 0.008 255);
+    --text-4: oklch(0.36 0.006 255);
+    --pass: oklch(0.70 0.16 158);
+    --fail: oklch(0.68 0.19 22);
+    --warn: oklch(0.76 0.13 80);
+    --accent: oklch(0.62 0.05 255);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  nav {
+    padding: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo { width: 22px; height: 22px; }
+
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-3);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .page-header {
+    padding: 64px 0 48px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 strong { font-weight: 600; }
+
+  .faq-section {
+    padding: 16px 0 8px;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .faq-section-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 32px 0 16px;
+  }
+
+  .faq-item {
+    padding: 20px 0;
+  }
+
+  .faq-item + .faq-item {
+    border-top: 1px solid oklch(0.19 0.008 255);
+  }
+
+  .faq-item h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .faq-item p {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+    margin-bottom: 8px;
+  }
+
+  .faq-item code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    background: var(--bg-inset);
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+
+  pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    padding: 16px 20px;
+    overflow-x: auto;
+    color: var(--text-2);
+    margin: 12px 0;
+  }
+
+  pre .kw { color: oklch(0.72 0.12 300); }
+  pre .fn { color: oklch(0.75 0.14 200); }
+  pre .str { color: oklch(0.72 0.14 158); }
+  pre .cm { color: var(--text-4); }
+
+  .cta {
+    padding: 64px 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .cta h2 {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+
+  .cta h2 strong { font-weight: 600; }
+
+  .cta p {
+    color: var(--text-2);
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  .btn {
+    display: inline-block;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    border: 1px solid var(--border);
+    color: var(--text-2);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--text-3);
+    color: var(--text);
+  }
+
+  .cta-buttons { display: flex; gap: 12px; }
+
+  footer {
+    padding: 24px 0 40px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-4);
+  }
+
+  footer a {
+    color: var(--text-3);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .page-header h1 { font-size: 24px; }
+    .cta-buttons { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="/" class="nav-brand"><svg class="nav-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="3" fill="currentColor"/><path d="M8 17 L13 22 L24 11" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>proofagent</a>
+    <ul class="nav-links">
+      <li><a href="/use-cases">Use Cases</a></li>
+      <li><a href="/how-it-works">How It Works</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="https://github.com/camgitt/proofagent">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-header">
+    <h1><strong>FAQ</strong></h1>
+  </section>
+
+  <!-- BASICS -->
+  <section class="faq-section">
+    <div class="faq-section-title">Basics</div>
+
+    <div class="faq-item">
+      <h3>What is proofagent?</h3>
+      <p>An open-source Python framework for testing AI agents. You write assertions against LLM outputs — text content, tool calls, cost, latency, multi-step trajectories — and run them with pytest. Think of it as unit tests for AI.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I install it?</h3>
+      <pre>pip install proofagent</pre>
+      <p>For provider support: <code>pip install "proofagent[openai]"</code>, <code>"proofagent[anthropic]"</code>, <code>"proofagent[gemini]"</code>, or <code>"proofagent[all]"</code>.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I write my first test?</h3>
+      <pre><span class="kw">from</span> proofagent <span class="kw">import</span> expect, LLMResult
+
+<span class="kw">def</span> <span class="fn">test_output</span>():
+    result = LLMResult(text=<span class="str">"The capital of France is Paris."</span>)
+    expect(result).contains(<span class="str">"Paris"</span>)</pre>
+      <p>Save as <code>test_example.py</code>, run <code>pytest</code>. That's it.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Do I need an API key?</h3>
+      <p>No. You can test entirely offline by constructing <code>LLMResult</code> objects directly. API keys are only needed if you want to call a live model during tests using the <code>proofagent_run</code> fixture.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Is it free?</h3>
+      <p>Yes. MIT license. Free forever. No telemetry, no cloud, no signup.</p>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="faq-section">
+    <div class="faq-section-title">How it works</div>
+
+    <div class="faq-item">
+      <h3>What providers does it support?</h3>
+      <p>OpenAI, Anthropic, Google Gemini, Ollama (local), and any OpenAI-compatible API. You can also wrap any model's output in an <code>LLMResult</code> and test it without a provider adapter.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How is it different from Promptfoo or DeepEval?</h3>
+      <p>proofagent is pure Python with a pytest-style API. No YAML, no external CLI, no hosted platform. It's designed for <strong>agents</strong>, not just prompts — with first-class support for tool call testing, multi-step trajectory evaluation, and cost tracking. It also has zero telemetry and no vendor lock-in.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Can I test tool calls?</h3>
+      <p>Yes. This is what makes proofagent different. You can assert that an agent called specific tools, didn't call others, and passed the right arguments:</p>
+      <pre>expect(result).tool_calls_contain(<span class="str">"search"</span>).no_tool_call(<span class="str">"delete"</span>)</pre>
+    </div>
+
+    <div class="faq-item">
+      <h3>Can I test multi-step agent workflows?</h3>
+      <p>Yes. Capture the full trajectory (user messages, assistant responses, tool calls and results) in an <code>LLMResult</code> and assert on the sequence length, specific tool calls, and final output.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I compare two models?</h3>
+      <p>Use the <code>proofagent_compare</code> fixture or the CLI:</p>
+      <pre>proofagent compare --model-a gpt-4o --model-b claude-sonnet-4-6 "Explain gravity"</pre>
+      <p>This runs the same prompt on both models and shows a side-by-side comparison of output, cost, and latency.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I add custom assertions?</h3>
+      <p>Inline with <code>.custom()</code> or register reusable ones:</p>
+      <pre><span class="cm"># Inline</span>
+expect(result).custom(<span class="str">"is_polite"</span>, <span class="kw">lambda</span> r: <span class="str">"please"</span> <span class="kw">in</span> r.text.lower())
+
+<span class="cm"># Reusable</span>
+<span class="kw">from</span> proofagent <span class="kw">import</span> register_assertion
+register_assertion(<span class="str">"is_polite"</span>, <span class="kw">lambda</span> r: <span class="str">"please"</span> <span class="kw">in</span> r.text.lower())</pre>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I load test cases from a file?</h3>
+      <p>Use the built-in dataset loader with CSV or JSONL files:</p>
+      <pre><span class="kw">from</span> proofagent <span class="kw">import</span> Dataset
+
+dataset = Dataset.from_file(<span class="str">"tests/data/prompts.jsonl"</span>)
+safety_cases = dataset.filter(tag=<span class="str">"safety"</span>)
+sample = dataset.sample(n=<span class="num">10</span>, seed=<span class="num">42</span>)</pre>
+    </div>
+  </section>
+
+  <!-- CI/CD & PRODUCTION -->
+  <section class="faq-section">
+    <div class="faq-section-title">CI/CD & production</div>
+
+    <div class="faq-item">
+      <h3>How do I use it in CI/CD?</h3>
+      <p>Add two lines to your pipeline:</p>
+      <pre>pip install "proofagent[all]"
+proofagent gate --min-score 0.95 --block-on-fail</pre>
+      <p>If the pass rate drops below your threshold, the pipeline exits with code 1. Works with GitHub Actions, GitLab CI, CircleCI, and anything that runs shell commands.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>How do I see results in a dashboard?</h3>
+      <pre>proofagent dashboard --test tests/</pre>
+      <p>This runs your tests and opens a local web UI showing pass/fail results, costs, and test descriptions.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Can I configure it?</h3>
+      <p>Optional. Create <code>proofagent.json</code> or add <code>[tool.proofagent]</code> to your <code>pyproject.toml</code> to set defaults for provider, model, results directory, and minimum pass rate. Everything also works without any config file.</p>
+    </div>
+  </section>
+
+  <!-- WHY -->
+  <section class="faq-section">
+    <div class="faq-section-title">Why</div>
+
+    <div class="faq-item">
+      <h3>Why should I test my AI agent?</h3>
+      <p>LLM outputs are non-deterministic. A prompt change, model upgrade, or temperature tweak can silently break safety guardrails, hallucinate facts, or triple your API costs. Without automated tests, you won't know until users report it.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Why not just test manually?</h3>
+      <p>You can't re-run 200 adversarial prompts by hand after every change. Automated tests run in seconds, catch regressions immediately, and produce a record you can review. Manual testing is for exploration. Automated testing is for confidence.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Does this help with compliance?</h3>
+      <p>The EU AI Act requires organizations deploying high-risk AI to demonstrate testing and monitoring. proofagent gives you a structured, auditable test suite with pass/fail records — exactly what compliance reviews ask for.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Who is this for?</h3>
+      <p>Anyone shipping code that calls an LLM — chatbots, RAG pipelines, AI agents, copilots, content generators, trading bots. If your application depends on model output, you should be testing that output.</p>
+    </div>
+
+    <div class="faq-item">
+      <h3>Who built this?</h3>
+      <p>proofagent is open source and maintained at <a href="https://github.com/camgitt/proofagent" style="color: var(--text);">github.com/camgitt/proofagent</a>. Contributions welcome.</p>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2><strong>Still have questions?</strong></h2>
+    <p>Open an issue on GitHub or read the source — it's under 2,000 lines.</p>
+    <div class="cta-buttons">
+      <a href="https://github.com/camgitt/proofagent" class="btn btn-primary">GitHub</a>
+      <a href="/use-cases" class="btn btn-ghost">Use Cases</a>
+      <a href="/" class="btn btn-ghost">Home</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>proofagent &mdash; MIT License</span>
+    <span><a href="https://github.com/camgitt/proofagent">source</a> &middot; <a href="https://pypi.org/project/proofagent/">pypi</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Use Cases — proofagent</title>
+<meta name="description" content="Real-world use cases for testing AI agents with proofagent. Trading bots, support agents, code generation, RAG pipelines, and content moderation.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: oklch(0.145 0.012 255);
+    --bg-raised: oklch(0.175 0.014 255);
+    --bg-inset: oklch(0.125 0.01 255);
+    --border: oklch(0.26 0.012 255);
+    --border-subtle: oklch(0.22 0.01 255);
+    --text: oklch(0.92 0.008 255);
+    --text-2: oklch(0.68 0.01 255);
+    --text-3: oklch(0.48 0.008 255);
+    --text-4: oklch(0.36 0.006 255);
+    --pass: oklch(0.70 0.16 158);
+    --fail: oklch(0.68 0.19 22);
+    --warn: oklch(0.76 0.13 80);
+    --accent: oklch(0.62 0.05 255);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  nav {
+    padding: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo { width: 22px; height: 22px; }
+
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-3);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .page-header {
+    padding: 64px 0 48px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 strong { font-weight: 600; }
+
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-2);
+    max-width: 560px;
+    line-height: 1.65;
+  }
+
+  .case-study {
+    padding: 48px 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .case-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-4);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+  }
+
+  .case-study h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+
+  .case-study .problem {
+    color: var(--text-2);
+    font-size: 15px;
+    line-height: 1.65;
+    margin-bottom: 24px;
+    max-width: 600px;
+  }
+
+  .case-study .solution-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-3);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    color: var(--text-2);
+    margin-bottom: 20px;
+  }
+
+  pre .kw { color: oklch(0.72 0.12 300); }
+  pre .fn { color: oklch(0.75 0.14 200); }
+  pre .str { color: oklch(0.72 0.14 158); }
+  pre .cm { color: var(--text-4); }
+  pre .num { color: var(--warn); }
+
+  .what-catches {
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.65;
+  }
+
+  .what-catches strong {
+    color: var(--text);
+  }
+
+  .what-catches ul {
+    margin: 8px 0 0 20px;
+  }
+
+  .what-catches li {
+    margin-bottom: 4px;
+  }
+
+  .cta {
+    padding: 64px 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .cta h2 {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+
+  .cta h2 strong { font-weight: 600; }
+
+  .cta p {
+    color: var(--text-2);
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  .btn {
+    display: inline-block;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    border: 1px solid var(--border);
+    color: var(--text-2);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--text-3);
+    color: var(--text);
+  }
+
+  .cta-buttons { display: flex; gap: 12px; }
+
+  footer {
+    padding: 24px 0 40px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-4);
+  }
+
+  footer a {
+    color: var(--text-3);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .page-header h1 { font-size: 24px; }
+    .cta-buttons { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="/" class="nav-brand"><svg class="nav-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="3" fill="currentColor"/><path d="M8 17 L13 22 L24 11" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>proofagent</a>
+    <ul class="nav-links">
+      <li><a href="/use-cases">Use Cases</a></li>
+      <li><a href="/how-it-works">How It Works</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="https://github.com/camgitt/proofagent">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-header">
+    <h1><strong>Who uses proofagent</strong> and why</h1>
+    <p>Every AI agent has failure modes. These are the teams catching them before users do.</p>
+  </section>
+
+  <!-- CASE 1: Trading Bot -->
+  <section class="case-study">
+    <div class="case-label">Fintech</div>
+    <h2>AI trading agent that checks risk limits</h2>
+    <p class="problem">
+      You built an AI agent that executes stock trades based on natural language instructions. Before every trade, it must check position limits and reject orders that exceed risk thresholds. If it skips that step, a single bad trade could blow up an account. You need to prove — in every CI run — that the safety check always happens first.
+    </p>
+    <div class="solution-label">The test</div>
+    <pre><span class="kw">from</span> proofagent <span class="kw">import</span> expect, LLMResult, ToolCall
+
+<span class="kw">def</span> <span class="fn">test_trading_agent_checks_limits</span>():
+    <span class="str">"""Agent must verify position limits before executing any trade."""</span>
+    result = LLMResult(
+        text=<span class="str">"Bought 10 shares of AAPL at $185.50"</span>,
+        tool_calls=[
+            ToolCall(name=<span class="str">"check_position_limit"</span>, args={<span class="str">"symbol"</span>: <span class="str">"AAPL"</span>}),
+            ToolCall(name=<span class="str">"execute_trade"</span>, args={<span class="str">"symbol"</span>: <span class="str">"AAPL"</span>, <span class="str">"shares"</span>: <span class="num">10</span>}),
+        ],
+        cost=<span class="num">0.004</span>,
+    )
+    (
+        expect(result)
+        .tool_calls_contain(<span class="str">"check_position_limit"</span>)  <span class="cm"># must check first</span>
+        .tool_calls_contain(<span class="str">"execute_trade"</span>)
+        .total_cost_under(<span class="num">0.05</span>)
+    )
+
+<span class="kw">def</span> <span class="fn">test_rejects_excessive_trade</span>():
+    <span class="str">"""Agent must refuse trades exceeding risk limits."""</span>
+    result = LLMResult(
+        text=<span class="str">"I can't execute this — it exceeds your $10,000 limit."</span>,
+        tool_calls=[
+            ToolCall(name=<span class="str">"check_position_limit"</span>, args={<span class="str">"amount"</span>: <span class="num">50000</span>}),
+        ],
+    )
+    (
+        expect(result)
+        .tool_calls_contain(<span class="str">"check_position_limit"</span>)
+        .no_tool_call(<span class="str">"execute_trade"</span>)  <span class="cm"># must NOT execute</span>
+        .contains(<span class="str">"limit"</span>)
+    )</pre>
+    <div class="what-catches">
+      <strong>What this catches:</strong>
+      <ul>
+        <li>Agent skipping the limit check and going straight to execution</li>
+        <li>Agent executing trades that should have been rejected</li>
+        <li>Regressions after prompt changes or model upgrades</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CASE 2: Customer Support -->
+  <section class="case-study">
+    <div class="case-label">SaaS</div>
+    <h2>Customer support agent that doesn't hallucinate</h2>
+    <p class="problem">
+      Your AI support agent answers questions about your product's refund policy, pricing tiers, and feature availability. If it invents a "30-day money back guarantee" that doesn't exist, you'll have angry customers and legal problems. You need automated tests that catch hallucinated policies before they reach production.
+    </p>
+    <div class="solution-label">The test</div>
+    <pre><span class="kw">from</span> proofagent <span class="kw">import</span> expect, LLMResult
+
+<span class="kw">def</span> <span class="fn">test_no_hallucinated_refund_policy</span>():
+    <span class="str">"""Support agent must not invent refund policies."""</span>
+    result = LLMResult(
+        text=<span class="str">"Our refund policy allows returns within 14 days "</span>
+             <span class="str">"of purchase with a valid receipt."</span>
+    )
+    (
+        expect(result)
+        .not_contains(<span class="str">"30-day"</span>)         <span class="cm"># we don't offer 30-day</span>
+        .not_contains(<span class="str">"money back"</span>)      <span class="cm"># no money-back guarantee</span>
+        .not_contains(<span class="str">"no questions asked"</span>)
+        .contains(<span class="str">"14 days"</span>)            <span class="cm"># actual policy</span>
+    )
+
+<span class="kw">def</span> <span class="fn">test_support_stays_on_topic</span>(proofagent_run):
+    <span class="str">"""Agent should refuse to answer off-topic questions."""</span>
+    result = proofagent_run(
+        <span class="str">"What's the best restaurant in NYC?"</span>,
+        model=<span class="str">"gpt-4o-mini"</span>,
+        system=<span class="str">"You are a support agent for Acme Corp. Only answer product questions."</span>,
+    )
+    expect(result).refused()</pre>
+    <div class="what-catches">
+      <strong>What this catches:</strong>
+      <ul>
+        <li>Hallucinated policies, prices, or feature claims</li>
+        <li>Agent answering questions outside its domain</li>
+        <li>Inconsistencies between model versions</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CASE 3: Code Generation -->
+  <section class="case-study">
+    <div class="case-label">Developer tools</div>
+    <h2>Code generation agent that doesn't write vulnerable code</h2>
+    <p class="problem">
+      Your AI coding assistant generates database queries, API handlers, and configuration files. If it produces SQL with injection vulnerabilities or hardcodes API keys, that's a security incident. You need to validate that generated code follows security best practices automatically.
+    </p>
+    <div class="solution-label">The test</div>
+    <pre><span class="kw">import</span> re
+<span class="kw">from</span> proofagent <span class="kw">import</span> expect, LLMResult
+
+<span class="kw">def</span> <span class="fn">test_no_sql_injection</span>():
+    <span class="str">"""Generated SQL must use parameterized queries."""</span>
+    result = LLMResult(
+        text=<span class="str">'cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))'</span>
+    )
+    (
+        expect(result)
+        .not_contains(<span class="str">"f\"SELECT"</span>)    <span class="cm"># no f-string SQL</span>
+        .not_contains(<span class="str">"format("</span>)     <span class="cm"># no .format() SQL</span>
+        .not_contains(<span class="str">"' + "</span>)         <span class="cm"># no string concat SQL</span>
+        .contains(<span class="str">"%s"</span>)               <span class="cm"># uses parameterized query</span>
+    )
+
+<span class="kw">def</span> <span class="fn">test_no_hardcoded_secrets</span>():
+    <span class="str">"""Generated code must not contain hardcoded credentials."""</span>
+    result = LLMResult(
+        text=<span class="str">'api_key = os.environ["API_KEY"]'</span>
+    )
+    (
+        expect(result)
+        .matches_regex(<span class="str">r"os\.environ|getenv"</span>)
+        .custom(<span class="str">"no_hardcoded_key"</span>,
+            <span class="kw">lambda</span> r: <span class="kw">not</span> re.search(r<span class="str">'["\']sk-[a-zA-Z0-9]{20}'</span>, r.text))
+    )</pre>
+    <div class="what-catches">
+      <strong>What this catches:</strong>
+      <ul>
+        <li>SQL injection via string concatenation or f-strings</li>
+        <li>Hardcoded API keys, passwords, or tokens in generated code</li>
+        <li>Insecure defaults after model or prompt changes</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CASE 4: RAG Pipeline -->
+  <section class="case-study">
+    <div class="case-label">Enterprise</div>
+    <h2>RAG pipeline that retrieves the right documents</h2>
+    <p class="problem">
+      Your retrieval-augmented generation pipeline answers employee questions using internal documentation. If the retrieval step pulls irrelevant documents, the model confabulates answers from thin air. You need to test that the pipeline calls the right retrieval tools and that answers stay grounded in the retrieved context.
+    </p>
+    <div class="solution-label">The test</div>
+    <pre><span class="kw">from</span> proofagent <span class="kw">import</span> expect, LLMResult, ToolCall, TrajectoryStep
+
+<span class="kw">def</span> <span class="fn">test_rag_retrieves_before_answering</span>():
+    <span class="str">"""RAG agent must search docs before generating an answer."""</span>
+    result = LLMResult(
+        text=<span class="str">"Per the employee handbook (section 4.2), PTO accrues at 1.5 days/month."</span>,
+        tool_calls=[
+            ToolCall(name=<span class="str">"search_docs"</span>, args={<span class="str">"query"</span>: <span class="str">"PTO accrual rate"</span>}),
+        ],
+        trajectory=[
+            TrajectoryStep(role=<span class="str">"user"</span>, content=<span class="str">"How much PTO do I get?"</span>),
+            TrajectoryStep(role=<span class="str">"assistant"</span>, content=<span class="str">""</span>, tool_calls=[
+                ToolCall(name=<span class="str">"search_docs"</span>, args={<span class="str">"query"</span>: <span class="str">"PTO accrual"</span>})
+            ]),
+            TrajectoryStep(role=<span class="str">"tool"</span>, content=<span class="str">"Section 4.2: PTO accrues at 1.5 days per month..."</span>),
+            TrajectoryStep(role=<span class="str">"assistant"</span>, content=<span class="str">"Per the employee handbook..."</span>),
+        ],
+        cost=<span class="num">0.006</span>,
+    )
+    (
+        expect(result)
+        .tool_calls_contain(<span class="str">"search_docs"</span>)  <span class="cm"># must retrieve first</span>
+        .trajectory_length_under(<span class="num">8</span>)        <span class="cm"># efficient retrieval</span>
+        .contains(<span class="str">"handbook"</span>)               <span class="cm"># cites source</span>
+        .total_cost_under(<span class="num">0.02</span>)
+    )</pre>
+    <div class="what-catches">
+      <strong>What this catches:</strong>
+      <ul>
+        <li>Agent answering without retrieving supporting documents</li>
+        <li>Retrieval loops that burn tokens without finding relevant content</li>
+        <li>Answers that don't cite their source material</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- CASE 5: Content Moderation -->
+  <section class="case-study">
+    <div class="case-label">Trust & safety</div>
+    <h2>Content moderation agent that refuses harmful requests</h2>
+    <p class="problem">
+      Your AI-powered platform needs to refuse requests for harmful, illegal, or dangerous content. Every model update is a risk — a new version might handle edge cases differently. You need a regression suite that verifies refusal behavior across hundreds of adversarial prompts, running automatically on every deploy.
+    </p>
+    <div class="solution-label">The test</div>
+    <pre><span class="kw">import</span> pytest
+<span class="kw">from</span> proofagent <span class="kw">import</span> expect, LLMResult, Dataset
+
+<span class="cm"># Load 200+ adversarial prompts from a dataset</span>
+safety_dataset = Dataset.from_file(<span class="str">"tests/data/adversarial_prompts.jsonl"</span>)
+
+<span class="kw">@pytest.mark.parametrize</span>(<span class="str">"case"</span>, safety_dataset.rows)
+<span class="kw">def</span> <span class="fn">test_refuses_harmful_request</span>(proofagent_run, case):
+    <span class="str">"""Model must refuse every adversarial prompt in the dataset."""</span>
+    result = proofagent_run(case[<span class="str">"input"</span>], model=<span class="str">"gpt-4o-mini"</span>)
+    expect(result).refused().total_cost_under(<span class="num">0.01</span>)
+
+<span class="kw">def</span> <span class="fn">test_refusal_doesnt_leak_info</span>():
+    <span class="str">"""Refusals should not repeat the harmful request back."""</span>
+    result = LLMResult(
+        text=<span class="str">"I can't help with that. If you have other questions, I'm happy to assist."</span>
+    )
+    (
+        expect(result)
+        .refused()
+        .not_contains(<span class="str">"hack"</span>)
+        .not_contains(<span class="str">"exploit"</span>)
+        .length_under(<span class="num">200</span>)  <span class="cm"># refusals should be brief</span>
+    )</pre>
+    <div class="what-catches">
+      <strong>What this catches:</strong>
+      <ul>
+        <li>Model updates that weaken refusal behavior on edge cases</li>
+        <li>Jailbreak prompts that bypass safety guardrails</li>
+        <li>Refusals that accidentally repeat harmful content</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2><strong>Your agent has failure modes.</strong> Find them first.</h2>
+    <p>Install proofagent, write a test, run it. That's all there is to it.</p>
+    <div class="cta-buttons">
+      <a href="https://github.com/camgitt/proofagent" class="btn btn-primary">GitHub</a>
+      <a href="/how-it-works" class="btn btn-ghost">How It Works</a>
+      <a href="/" class="btn btn-ghost">Home</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>proofagent &mdash; MIT License</span>
+    <span><a href="https://github.com/camgitt/proofagent">source</a> &middot; <a href="https://pypi.org/project/proofagent/">pypi</a></span>
+  </footer>
+
+</div>
+</body>
+</html>

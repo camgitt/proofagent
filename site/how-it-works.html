@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>How It Works — proofagent</title>
+<meta name="description" content="How proofagent works under the hood. Understand the architecture: pytest plugin, provider adapters, assertion engine, and CI integration.">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: oklch(0.145 0.012 255);
+    --bg-raised: oklch(0.175 0.014 255);
+    --bg-inset: oklch(0.125 0.01 255);
+    --border: oklch(0.26 0.012 255);
+    --border-subtle: oklch(0.22 0.01 255);
+    --text: oklch(0.92 0.008 255);
+    --text-2: oklch(0.68 0.01 255);
+    --text-3: oklch(0.48 0.008 255);
+    --text-4: oklch(0.36 0.006 255);
+    --pass: oklch(0.70 0.16 158);
+    --fail: oklch(0.68 0.19 22);
+    --warn: oklch(0.76 0.13 80);
+    --accent: oklch(0.62 0.05 255);
+  }
+
+  html { font-size: 16px; }
+
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  nav {
+    padding: 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .nav-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .nav-logo { width: 22px; height: 22px; }
+
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+
+  .nav-links a {
+    font-size: 13px;
+    color: var(--text-3);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .page-header {
+    padding: 64px 0 48px;
+  }
+
+  .page-header h1 {
+    font-size: 32px;
+    font-weight: 300;
+    letter-spacing: -0.5px;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .page-header h1 strong { font-weight: 600; }
+
+  .page-header p {
+    font-size: 16px;
+    color: var(--text-2);
+    max-width: 560px;
+    line-height: 1.65;
+  }
+
+  .step {
+    padding: 48px 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .step-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-4);
+    margin-bottom: 8px;
+  }
+
+  .step h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+
+  .step p, .step li {
+    color: var(--text-2);
+    font-size: 15px;
+    line-height: 1.65;
+    margin-bottom: 12px;
+  }
+
+  .step ul {
+    margin: 12px 0 20px 20px;
+  }
+
+  .step li {
+    margin-bottom: 6px;
+  }
+
+  pre {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    padding: 20px 24px;
+    overflow-x: auto;
+    color: var(--text-2);
+    margin-bottom: 20px;
+  }
+
+  pre .kw { color: oklch(0.72 0.12 300); }
+  pre .fn { color: oklch(0.75 0.14 200); }
+  pre .str { color: oklch(0.72 0.14 158); }
+  pre .cm { color: var(--text-4); }
+  pre .num { color: var(--warn); }
+
+  .diagram {
+    background: var(--bg-inset);
+    border: 1px solid var(--border-subtle);
+    border-radius: 5px;
+    padding: 28px 24px;
+    margin: 20px 0;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text-2);
+    white-space: pre;
+    overflow-x: auto;
+  }
+
+  .diagram .highlight { color: var(--pass); }
+  .diagram .dim { color: var(--text-4); }
+
+  .key-point {
+    background: var(--bg-raised);
+    border-left: 3px solid var(--accent);
+    padding: 16px 20px;
+    margin: 20px 0;
+    font-size: 14px;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+
+  .key-point strong { color: var(--text); }
+
+  .cta {
+    padding: 64px 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+
+  .cta h2 {
+    font-size: 24px;
+    font-weight: 300;
+    margin-bottom: 8px;
+  }
+
+  .cta h2 strong { font-weight: 600; }
+
+  .cta p {
+    color: var(--text-2);
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  .btn {
+    display: inline-block;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.15s;
+  }
+
+  .btn-primary {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-ghost {
+    border: 1px solid var(--border);
+    color: var(--text-2);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--text-3);
+    color: var(--text);
+  }
+
+  .cta-buttons { display: flex; gap: 12px; }
+
+  footer {
+    padding: 24px 0 40px;
+    border-top: 1px solid var(--border-subtle);
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-4);
+  }
+
+  footer a {
+    color: var(--text-3);
+    text-decoration: none;
+  }
+
+  footer a:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .page-header h1 { font-size: 24px; }
+    .cta-buttons { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="/" class="nav-brand"><svg class="nav-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="3" fill="currentColor"/><path d="M8 17 L13 22 L24 11" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>proofagent</a>
+    <ul class="nav-links">
+      <li><a href="/use-cases">Use Cases</a></li>
+      <li><a href="/how-it-works">How It Works</a></li>
+      <li><a href="/faq">FAQ</a></li>
+      <li><a href="https://github.com/camgitt/proofagent">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-header">
+    <h1><strong>How proofagent works</strong></h1>
+    <p>Four concepts. No magic. You can read the entire source in 20 minutes.</p>
+  </section>
+
+  <!-- STEP 1 -->
+  <section class="step">
+    <div class="step-num">01</div>
+    <h2>You write a test. It's just Python.</h2>
+    <p>A proofagent test is a regular Python function. No YAML. No config files. No DSL to learn. If you've used pytest, you already know how to use proofagent.</p>
+    <pre><span class="kw">from</span> proofagent <span class="kw">import</span> expect, LLMResult
+
+<span class="kw">def</span> <span class="fn">test_my_agent</span>():
+    result = LLMResult(text=<span class="str">"The answer is 42"</span>, cost=<span class="num">0.003</span>)
+    expect(result).contains(<span class="str">"42"</span>).total_cost_under(<span class="num">0.01</span>)</pre>
+    <div class="key-point">
+      <strong>Offline by default.</strong> You can test assertions without any API key by constructing <code>LLMResult</code> directly. This is how most teams start — test the assertion logic first, add live API calls later.
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step">
+    <div class="step-num">02</div>
+    <h2>The provider calls the model and captures everything.</h2>
+    <p>When you use the <code>proofagent_run</code> fixture, proofagent calls the LLM through a thin adapter layer and captures the full response:</p>
+    <ul>
+      <li><strong>Text output</strong> — what the model said</li>
+      <li><strong>Tool calls</strong> — which functions the agent invoked, with what arguments</li>
+      <li><strong>Trajectory</strong> — the full multi-step conversation (for agent workflows)</li>
+      <li><strong>Cost</strong> — calculated from token counts and model pricing</li>
+      <li><strong>Latency</strong> — wall-clock time for the API call</li>
+    </ul>
+    <p>All of this gets packed into an <code>LLMResult</code> object that your assertions run against.</p>
+    <div class="diagram"><span class="dim">Your test</span>                <span class="dim">Provider adapter</span>          <span class="dim">LLM API</span>
+    |                         |                        |
+    |── proofagent_run() ──>  |                        |
+    |                         |── API call ──────────>  |
+    |                         |                        |
+    |                         |  <── response ────────  |
+    |                         |                        |
+    |                         |  capture: text, tools,  |
+    |                         |  cost, latency, tokens  |
+    |                         |                        |
+    |  <── <span class="highlight">LLMResult</span> ────────  |                        |</div>
+    <p>Providers are interchangeable. Switch from OpenAI to Anthropic by changing one env var. The test code stays the same.</p>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step">
+    <div class="step-num">03</div>
+    <h2>Assertions check the result. All chainable.</h2>
+    <p>The <code>expect()</code> function wraps an <code>LLMResult</code> and returns an <code>Expectation</code> object with 16 built-in assertions. Every assertion returns <code>self</code>, so you chain them:</p>
+    <pre>(
+    expect(result)
+    .contains(<span class="str">"hello"</span>)                 <span class="cm"># text contains substring</span>
+    .tool_calls_contain(<span class="str">"search"</span>)       <span class="cm"># agent called this tool</span>
+    .no_tool_call(<span class="str">"delete"</span>)             <span class="cm"># agent did NOT call this</span>
+    .total_cost_under(<span class="num">0.10</span>)            <span class="cm"># cost below threshold</span>
+    .latency_under(<span class="num">5.0</span>)               <span class="cm"># responded in time</span>
+    .trajectory_length_under(<span class="num">10</span>)      <span class="cm"># didn't loop forever</span>
+)</pre>
+    <p>Each assertion raises <code>AssertionError</code> with a clear message on failure. Pytest catches it, marks the test as failed, and shows you exactly what went wrong.</p>
+    <div class="key-point">
+      <strong>Custom assertions in one line.</strong> For anything the built-ins don't cover:<br>
+      <code>expect(result).custom("is_polite", lambda r: "please" in r.text.lower())</code>
+    </div>
+  </section>
+
+  <!-- STEP 4 -->
+  <section class="step">
+    <div class="step-num">04</div>
+    <h2>pytest runs it. CI gates it. Dashboard shows it.</h2>
+    <p>proofagent is a pytest plugin. It hooks into pytest's lifecycle to:</p>
+    <ul>
+      <li><strong>Register fixtures</strong> — <code>proofagent_run</code>, <code>proofagent_compare</code>, <code>proofagent_dataset</code></li>
+      <li><strong>Register markers</strong> — <code>@pytest.mark.safety</code>, <code>@pytest.mark.agent</code> for selective test runs</li>
+      <li><strong>Print summaries</strong> — pass rate, failed test names, total cost after every run</li>
+    </ul>
+    <pre><span class="cm"># Run all tests</span>
+$ pytest tests/ -v
+
+<span class="cm"># Run only safety tests</span>
+$ pytest tests/ -m safety
+
+<span class="cm"># Gate deploys on pass rate</span>
+$ proofagent gate --min-score 0.95 --block-on-fail
+
+<span class="cm"># View results in the browser</span>
+$ proofagent dashboard --test tests/</pre>
+    <p>In CI, if any test fails or the pass rate drops below your threshold, the pipeline exits with code 1. Bad deploys don't ship.</p>
+  </section>
+
+  <!-- Architecture summary -->
+  <section class="step">
+    <div class="step-num">Architecture</div>
+    <h2>The whole system in one diagram</h2>
+    <div class="diagram"><span class="highlight">Your test file</span>
+    |
+    ├── expect(result).contains().refused()
+    |       |
+    |       └── <span class="highlight">Assertion engine</span> (expect.py)
+    |           Chainable checks, raises AssertionError on fail
+    |
+    ├── proofagent_run("prompt", model="gpt-4o")
+    |       |
+    |       └── <span class="highlight">Provider adapter</span> (providers/)
+    |           OpenAI | Anthropic | Gemini | Ollama
+    |           Captures: text, tools, cost, latency, trajectory
+    |           Returns: LLMResult
+    |
+    └── pytest collects + runs
+        |
+        ├── <span class="highlight">Plugin</span> (plugin.py) — fixtures, markers, summary
+        ├── <span class="highlight">Dashboard</span> — local web UI for results
+        └── <span class="highlight">Gate</span> — CI pass/fail threshold</div>
+  </section>
+
+  <section class="cta">
+    <h2><strong>That's it.</strong> No hidden complexity.</h2>
+    <p>Install, write a test, run pytest. Takes 30 seconds to start.</p>
+    <div class="cta-buttons">
+      <a href="https://github.com/camgitt/proofagent" class="btn btn-primary">GitHub</a>
+      <a href="/use-cases" class="btn btn-ghost">Use Cases</a>
+      <a href="/" class="btn btn-ghost">Home</a>
+    </div>
+  </section>
+
+  <footer>
+    <span>proofagent &mdash; MIT License</span>
+    <span><a href="https://github.com/camgitt/proofagent">source</a> &middot; <a href="https://pypi.org/project/proofagent/">pypi</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
