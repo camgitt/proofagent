@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>Terms & Legal — proofagent</title>
+<meta name="description" content="Terms of use, privacy policy, and legal information for proofagent.">
+<meta property="og:title" content="Terms & Legal — proofagent">
+<meta property="og:image" content="https://proofagent.dev/og.svg">
+<meta name="twitter:card" content="summary_large_image">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: oklch(0.145 0.012 255);
+    --bg-raised: oklch(0.175 0.014 255);
+    --bg-inset: oklch(0.125 0.01 255);
+    --border: oklch(0.26 0.012 255);
+    --border-subtle: oklch(0.22 0.01 255);
+    --text: oklch(0.92 0.008 255);
+    --text-2: oklch(0.68 0.01 255);
+    --text-3: oklch(0.48 0.008 255);
+    --text-4: oklch(0.36 0.006 255);
+  }
+
+  html { font-size: 16px; }
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+
+  nav { padding: 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .nav-brand { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .nav-logo { width: 22px; height: 22px; }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { font-size: 13px; color: var(--text-3); text-decoration: none; transition: color 0.15s; }
+  .nav-links a:hover { color: var(--text); }
+
+  .page-header { padding: 64px 0 32px; }
+  .page-header h1 { font-size: 28px; font-weight: 300; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .page-header p { font-size: 13px; color: var(--text-4); font-family: 'IBM Plex Mono', monospace; }
+
+  h2 { font-size: 18px; font-weight: 600; margin: 40px 0 12px; }
+  h3 { font-size: 15px; font-weight: 600; margin: 24px 0 8px; }
+  p { font-size: 14px; color: var(--text-2); line-height: 1.7; margin-bottom: 12px; }
+  ul { margin: 0 0 12px 20px; }
+  li { font-size: 14px; color: var(--text-2); line-height: 1.7; margin-bottom: 4px; }
+  code { font-family: 'IBM Plex Mono', monospace; font-size: 13px; background: var(--bg-inset); padding: 2px 6px; border-radius: 3px; }
+
+  .section { padding-bottom: 32px; border-bottom: 1px solid var(--border-subtle); }
+
+  footer { padding: 24px 0 40px; border-top: 1px solid var(--border-subtle); display: flex; justify-content: space-between; font-size: 12px; color: var(--text-4); margin-top: 40px; }
+  footer a { color: var(--text-3); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <nav>
+    <a href="/" class="nav-brand"><svg class="nav-logo" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg"><rect width="32" height="32" rx="3" fill="currentColor"/><path d="M8 17 L13 22 L24 11" stroke="var(--bg)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>proofagent</a>
+    <ul class="nav-links">
+      <li><a href="/">Home</a></li>
+      <li><a href="/leaderboard">Leaderboard</a></li>
+      <li><a href="/cost-calculator">Cost Calculator</a></li>
+      <li><a href="https://github.com/camgitt/proofagent">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <section class="page-header">
+    <h1>Terms & Legal</h1>
+    <p>Last updated: March 15, 2026</p>
+  </section>
+
+  <div class="section">
+    <h2>License</h2>
+    <p>proofagent is open-source software released under the <strong>MIT License</strong>. You are free to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the software.</p>
+    <p>The software is provided "as is", without warranty of any kind, express or implied. In no event shall the authors be liable for any claim, damages, or other liability.</p>
+    <p>Full license text: <a href="https://github.com/camgitt/proofagent/blob/main/LICENSE" style="color: var(--text-3);">github.com/camgitt/proofagent/blob/main/LICENSE</a></p>
+  </div>
+
+  <div class="section">
+    <h2>Terms of Use</h2>
+
+    <h3>Intended use</h3>
+    <p>proofagent is a defensive security and quality assurance tool. It is designed to help developers test, evaluate, and improve the safety and reliability of AI agents and language models. Intended uses include:</p>
+    <ul>
+      <li>Testing AI agents for safety, accuracy, and compliance</li>
+      <li>Running automated evaluation suites in CI/CD pipelines</li>
+      <li>Benchmarking model safety across providers</li>
+      <li>Identifying regressions after model updates or prompt changes</li>
+    </ul>
+
+    <h3>Prohibited use</h3>
+    <p>You may not use proofagent or its built-in datasets to:</p>
+    <ul>
+      <li>Develop techniques to bypass, circumvent, or defeat AI safety measures</li>
+      <li>Generate, collect, or distribute harmful content</li>
+      <li>Harass, deceive, or cause harm to any person</li>
+      <li>Violate the terms of service of any AI provider</li>
+    </ul>
+    <p>The built-in safety prompt packs contain adversarial inputs by design. These exist solely for defensive testing. The prompts are questions, not instructions — they test whether models <em>refuse</em> harmful requests, not how to <em>extract</em> harmful outputs.</p>
+
+    <h3>Leaderboard</h3>
+    <p>The AI Safety Leaderboard presents evaluation results based on automated testing. Models marked "verified" were tested live using the proofagent framework. Models marked "pending" show estimated results awaiting API access. All results reflect a specific point in time and should not be treated as definitive safety ratings.</p>
+    <p>Model behavior can vary based on system prompts, API versions, temperature settings, and other parameters. A model's score on this leaderboard does not constitute a comprehensive safety evaluation.</p>
+    <p>We do not endorse or recommend any specific AI model or provider. The leaderboard is provided for informational and educational purposes only.</p>
+
+    <h3>Accuracy</h3>
+    <p>proofagent is a testing tool, not a certification authority. Passing all proofagent tests does not guarantee that a model or agent is safe, unbiased, or fit for any particular purpose. AI safety is a complex, evolving field — automated testing is one layer of a comprehensive safety strategy.</p>
+
+    <h3>No warranty</h3>
+    <p>The software, website, leaderboard, cost calculator, and all related content are provided "as is" and "as available" without warranties of any kind, whether express, implied, statutory, or otherwise, including but not limited to implied warranties of merchantability, fitness for a particular purpose, and non-infringement.</p>
+  </div>
+
+  <div class="section">
+    <h2>Limitation of Liability</h2>
+    <p>To the maximum extent permitted by applicable law, the authors and maintainers of proofagent shall not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits or revenue, whether incurred directly or indirectly, or any loss of data, use, goodwill, or other intangible losses, resulting from:</p>
+    <ul>
+      <li>Your use of or inability to use proofagent or the website</li>
+      <li>Any results, conclusions, or decisions made based on leaderboard data or evaluation results</li>
+      <li>Unauthorized access to or alteration of your data or transmissions</li>
+      <li>Any third-party conduct or content on the service</li>
+      <li>Any other matter relating to proofagent</li>
+    </ul>
+  </div>
+
+  <div class="section">
+    <h2>Indemnification</h2>
+    <p>You agree to defend, indemnify, and hold harmless the authors and maintainers of proofagent from and against any claims, damages, obligations, losses, liabilities, costs, or expenses arising from your use of the software or violation of these terms.</p>
+  </div>
+
+  <div class="section">
+    <h2>Privacy Policy</h2>
+
+    <h3>What we collect</h3>
+    <p><strong>Nothing.</strong> proofagent has zero telemetry, zero analytics, and zero tracking in the Python package. We do not collect, transmit, or store any data from your evaluations, test results, API keys, or prompts.</p>
+
+    <h3>Website</h3>
+    <p>The proofagent.dev website is a static site hosted on Vercel. We do not use cookies, analytics scripts, or tracking pixels. Vercel may collect standard web server logs (IP address, user agent, timestamps) as part of their hosting infrastructure — see <a href="https://vercel.com/legal/privacy-policy" style="color: var(--text-3);">Vercel's privacy policy</a>.</p>
+
+    <h3>Third-party APIs</h3>
+    <p>When you use proofagent to test models, your prompts are sent directly from your machine to the AI provider's API (OpenAI, Anthropic, Google, etc.). proofagent does not proxy, log, or intercept these requests. Your data is governed by the respective provider's privacy policy and terms of service.</p>
+  </div>
+
+  <div class="section">
+    <h2>Responsible Disclosure</h2>
+    <p>If you discover a security vulnerability in proofagent, please report it responsibly by emailing the maintainers or opening a private security advisory on GitHub. Do not open a public issue for security vulnerabilities.</p>
+  </div>
+
+  <div class="section">
+    <h2>Changes to These Terms</h2>
+    <p>We may update these terms from time to time. Changes will be posted on this page with an updated "Last updated" date. Your continued use of proofagent after changes constitutes acceptance of the revised terms.</p>
+  </div>
+
+  <div class="section">
+    <h2>Governing Law</h2>
+    <p>These terms shall be governed by and construed in accordance with applicable law, without regard to conflict of law principles.</p>
+  </div>
+
+  <div class="section">
+    <h2>Contact</h2>
+    <p>For questions about these terms, open an issue on <a href="https://github.com/camgitt/proofagent" style="color: var(--text-3);">GitHub</a>.</p>
+  </div>
+
+  <footer>
+    <span>proofagent &mdash; MIT License</span>
+    <span><a href="https://github.com/camgitt/proofagent">source</a> &middot; <a href="https://pypi.org/project/proofagent/">pypi</a> &middot; <a href="/terms">terms</a></span>
+  </footer>
+
+</div>
+</body>
+</html>
