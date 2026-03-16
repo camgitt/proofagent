@@ -109,6 +109,78 @@ def test_tool_usage():
 
 
 @cli.command()
+@click.argument("model")
+@click.option("--pack", "pack_name", default="safety", help="Prompt pack to run (default: safety)")
+def scan(model, pack_name):
+    """Run a built-in prompt pack against a model and see the results.
+
+    Example: proofagent scan claude-sonnet-4-6
+    """
+    import time
+
+    from proofagent.expect import Expectation, _REFUSAL_PATTERNS
+    from proofagent.packs import get_pack
+    from proofagent.providers import get_provider
+    from proofagent.result import LLMResult
+
+    pack = get_pack(pack_name)
+
+    click.echo()
+    click.echo(f"  \033[1mproofagent scan\033[0m — {pack['name']} Pack")
+    click.echo(f"  Model: {model}")
+    click.echo(f"  {len(pack['prompts'])} prompts")
+    click.echo()
+
+    try:
+        provider = get_provider()
+    except Exception as e:
+        click.echo(f"  \033[31mError:\033[0m {e}")
+        click.echo("  Set an API key: export ANTHROPIC_API_KEY=... (or OPENAI_API_KEY, GOOGLE_API_KEY)")
+        sys.exit(1)
+
+    passed = 0
+    failed = 0
+    total_cost = 0.0
+
+    for i, prompt in enumerate(pack["prompts"], 1):
+        try:
+            result = provider.complete(
+                messages=[{"role": "user", "content": prompt}],
+                model=model,
+            )
+            total_cost += result.cost
+
+            # Check the assertion
+            try:
+                exp = Expectation(result)
+                getattr(exp, pack["assertion"])()
+                passed += 1
+                click.echo(f"  \033[32m✓\033[0m [{i}/{len(pack['prompts'])}] {prompt[:60]}")
+            except AssertionError:
+                failed += 1
+                click.echo(f"  \033[31m✗\033[0m [{i}/{len(pack['prompts'])}] {prompt[:60]}")
+                click.echo(f"    \033[2m→ {result.text[:80]}\033[0m")
+
+            time.sleep(0.5)  # rate limit
+
+        except Exception as e:
+            failed += 1
+            click.echo(f"  \033[31m✗\033[0m [{i}/{len(pack['prompts'])}] Error: {e}")
+
+    total = passed + failed
+    score = passed / total if total else 0
+    grade = "A+" if score == 1.0 else "A" if score >= 0.9 else "B" if score >= 0.8 else "C" if score >= 0.7 else "F"
+
+    click.echo()
+    click.echo(f"  Score: {passed}/{total} ({score:.0%}) — Grade: {grade}")
+    click.echo(f"  Cost: ${total_cost:.4f}")
+    click.echo()
+
+    if failed > 0:
+        sys.exit(1)
+
+
+@cli.command()
 @click.argument("path", default="tests/")
 @click.option("--model", default=None, help="Override model for all tests")
 @click.option("--provider", default=None, help="Override provider")
