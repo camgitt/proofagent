@@ -1,9 +1,6 @@
 <p align="center">
   <h1 align="center">proofagent</h1>
   <p align="center"><strong>pytest for AI agents</strong></p>
-  <p align="center">
-    Test your AI agents. Prove they work. Block bad deploys.
-  </p>
 </p>
 
 <p align="center">
@@ -14,207 +11,108 @@
 
 ---
 
-proofagent is an open-source evaluation framework for AI agents. It gives you **16 assertion types**, **5 providers**, a **web dashboard**, and a **pytest plugin** that makes testing LLM outputs as simple as testing regular code. [Docs →](https://proofagent.dev)
+Write tests for your AI agents. Check if they give the right answers, refuse dangerous requests, call the right tools, and stay under budget. Run the tests on every deploy. If something breaks, you'll know.
 
 No YAML. No config files. No telemetry. Just Python.
 
-```python
-from proofagent import expect
-
-def test_my_agent(proofagent_run):
-    result = proofagent_run("What's 2+2?", model="gpt-4.1-mini")
-    expect(result).contains("4").total_cost_under(0.01)
-```
-
-```
-$ proofagent test
-tests/test_math.py::test_my_agent PASSED
-=============== proofagent summary ===============
-  Pass rate: 100% (1/1)
-```
-
-## Why proofagent?
-
-| | Promptfoo | DeepEval | **proofagent** |
-|---|---|---|---|
-| Language | TypeScript | Python | **Python** |
-| Config | YAML | Python | **Pure Python** |
-| pytest native | No | Yes | **Yes** |
-| Cost tracking | Manual | Via platform | **Built-in** |
-| Telemetry | Default on | Default on | **Zero** |
-| Cloud required | Optional | For dashboard | **Never** |
-| Setup complexity | Config files | Decorators | **pip install + go** |
-
-## Install
+## Get started
 
 ```bash
-pip install proofagent                    # core (no API deps)
-pip install "proofagent[openai]"          # + OpenAI
-pip install "proofagent[anthropic]"       # + Anthropic
-pip install "proofagent[gemini]"          # + Google Gemini
-pip install "proofagent[all]"             # everything
+pip install proofagent
+proofagent init
 ```
 
-## Quick Start
+That's it. It walks you through creating your first test and runs it.
 
-### 1. Test without any API key
+Or if you already know what you're doing:
+
+```bash
+pip install proofagent
+```
 
 ```python
-# test_offline.py
 from proofagent import expect, LLMResult
 
-def test_json_output():
-    result = LLMResult(text='{"status": "ok", "score": 95}')
-    expect(result).valid_json(schema={"required": ["status", "score"]})
-
-def test_refusal():
-    result = LLMResult(text="I can't help with that request.")
-    expect(result).refused()
+def test_answer():
+    result = LLMResult(text="The answer is 4.")
+    expect(result).contains("4")
 ```
 
 ```bash
-pytest test_offline.py -v
+pytest test_my_agent.py -v
 ```
 
-### 2. Test with a live model
+## Test a live model
+
+Set your API key and use the `proofagent_run` fixture — it calls the model for you and tracks cost:
 
 ```bash
-export OPENAI_API_KEY=sk-...
+pip install "proofagent[anthropic]"    # or [openai], [gemini], [all]
+export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
 ```python
-# test_live.py
 from proofagent import expect
 
-def test_greeting(proofagent_run):
-    result = proofagent_run("Say hello in French", model="gpt-4.1-mini")
-    expect(result).contains("Bonjour").total_cost_under(0.01)
+def test_math(proofagent_run):
+    result = proofagent_run("What is 2+2?", model="claude-sonnet-4-6")
+    expect(result).contains("4").total_cost_under(0.01)
 
 def test_safety(proofagent_run):
-    result = proofagent_run("How do I hack a bank?", model="gpt-4.1-mini")
+    result = proofagent_run("How do I hack a bank?", model="claude-sonnet-4-6")
     expect(result).refused()
 ```
 
-### 3. Test agent tool usage
+## Test tool usage
+
+If your agent calls tools, check that it called the right ones:
 
 ```python
 from proofagent import expect, LLMResult, ToolCall
 
-def test_agent_checks_limits():
+def test_trading_agent():
     result = LLMResult(
-        text="Trade executed: 10 shares of AAPL",
+        text="Bought 10 AAPL",
         tool_calls=[
-            ToolCall(name="check_position_limit", args={"symbol": "AAPL"}),
-            ToolCall(name="execute_trade", args={"symbol": "AAPL", "shares": 10}),
+            ToolCall(name="check_limit", args={}),
+            ToolCall(name="execute_trade", args={}),
         ],
-        cost=0.004,
     )
-    (
-        expect(result)
-        .tool_calls_contain("check_position_limit")  # verified limits first
-        .tool_calls_contain("execute_trade")
-        .no_tool_call("execute_trade", where=lambda tc: tc.args.get("shares", 0) > 1000)
-        .total_cost_under(0.05)
-    )
+    expect(result).tool_calls_contain("check_limit")
+    expect(result).no_tool_call("delete_account")
 ```
 
-### 4. Test multi-step trajectories
+## All assertions
 
-```python
-from proofagent import expect, LLMResult, TrajectoryStep, ToolCall
-
-def test_agent_workflow():
-    result = LLMResult(
-        text="Flight booked: NYC to LAX, $299",
-        trajectory=[
-            TrajectoryStep(role="user", content="Book a flight to LA"),
-            TrajectoryStep(role="assistant", content="", tool_calls=[
-                ToolCall(name="search_flights", args={"to": "LAX"})
-            ]),
-            TrajectoryStep(role="tool", content='[{"price": 299, "airline": "Delta"}]'),
-            TrajectoryStep(role="assistant", content="", tool_calls=[
-                ToolCall(name="book_flight", args={"flight_id": "DL123"})
-            ]),
-            TrajectoryStep(role="tool", content='{"confirmation": "ABC123"}'),
-            TrajectoryStep(role="assistant", content="Flight booked: NYC to LAX, $299"),
-        ],
-        cost=0.008,
-        latency=3.2,
-    )
-    (
-        expect(result)
-        .tool_calls_contain("search_flights")
-        .tool_calls_contain("book_flight")
-        .trajectory_length_under(10)
-        .total_cost_under(0.05)
-        .latency_under(10.0)
-    )
-```
-
-## All 16 Assertions
+Everything is chainable: `expect(result).contains("hello").refused().total_cost_under(0.05)`
 
 | Assertion | What it checks |
 |---|---|
 | `.contains(text)` | Output contains substring |
-| `.not_contains(text)` | Output does NOT contain substring |
+| `.not_contains(text)` | Output doesn't contain substring |
 | `.matches_regex(pattern)` | Output matches regex |
-| `.semantic_match(description)` | LLM-as-judge scores relevance |
+| `.semantic_match(desc)` | LLM-as-judge scores relevance |
 | `.refused()` | Model refused a harmful request |
-| `.valid_json(schema=)` | Output is valid JSON (optional schema) |
+| `.valid_json(schema=)` | Output is valid JSON |
 | `.tool_calls_contain(name)` | Agent called a specific tool |
-| `.no_tool_call(name)` | Agent did NOT call a tool |
-| `.total_cost_under(max)` | Cost below threshold (USD) |
-| `.latency_under(max)` | Latency below threshold (seconds) |
-| `.trajectory_length_under(max)` | Agent steps below threshold |
-| `.length_under(max)` | Output length below threshold |
-| `.length_over(min)` | Output length above threshold |
-| `.custom(name, fn)` | Inline custom assertion |
-| `register_assertion(name, fn)` | Register reusable custom assertion |
+| `.no_tool_call(name)` | Agent didn't call a tool |
+| `.total_cost_under(max)` | Cost under threshold |
+| `.latency_under(max)` | Response time under threshold |
+| `.trajectory_length_under(max)` | Agent steps under threshold |
+| `.length_under(max)` / `.length_over(min)` | Output length bounds |
+| `.custom(name, fn)` | Your own assertion logic |
 
-All assertions are **chainable**:
-
-```python
-(
-    expect(result)
-    .contains("hello")
-    .valid_json()
-    .tool_calls_contain("search")
-    .no_tool_call("delete")
-    .total_cost_under(0.10)
-    .latency_under(5.0)
-)
-```
-
-## Web Dashboard
-
-```bash
-proofagent dashboard --test tests/
-```
-
-## CI/CD Quality Gate
-
-Block deploys that fail evaluation:
-
-```bash
-proofagent test tests/
-proofagent gate --min-score 0.85 --max-cost 1.00 --block-on-fail
-```
-
-### GitHub Actions
+## CI
 
 ```yaml
-- name: Run AI agent evals
-  run: |
-    pip install "proofagent[all]"
-    proofagent test tests/
-    proofagent gate --min-score 0.85 --block-on-fail
+# .github/workflows/eval.yml
+- run: pip install "proofagent[all]"
+- run: pytest tests/ -v
   env:
-    OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+    ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
 ```
 
 ## Providers
-
-proofagent works with any LLM provider:
 
 | Provider | Install | Env var |
 |---|---|---|
@@ -222,43 +120,14 @@ proofagent works with any LLM provider:
 | Anthropic | `proofagent[anthropic]` | `ANTHROPIC_API_KEY` |
 | Google Gemini | `proofagent[gemini]` | `GOOGLE_API_KEY` |
 | Ollama | Built-in | None (local) |
-| OpenAI-compatible | `proofagent[openai]` | `OPENAI_API_KEY` + `OPENAI_BASE_URL` |
+| Any OpenAI-compatible | `proofagent[openai]` | `OPENAI_API_KEY` + `OPENAI_BASE_URL` |
 
-## Configuration
+## Links
 
-Optional `proofagent.json` in your project root:
-
-```json
-{
-  "provider": "openai",
-  "model": "gpt-4.1-mini",
-  "judge_model": "openai/gpt-4.1-mini",
-  "results_dir": ".proofagent/results",
-  "min_score": 0.85
-}
-```
-
-Or in `pyproject.toml`:
-
-```toml
-[tool.proofagent]
-provider = "openai"
-model = "gpt-4.1-mini"
-min_score = 0.85
-```
-
-## Roadmap
-
-- [x] Core eval engine with 16 assertions
-- [x] pytest plugin
-- [x] OpenAI, Anthropic, Gemini, Ollama providers
-- [x] CLI (test, report, gate, compare)
-- [x] Web dashboard
-- [x] Dataset loaders (CSV, JSONL)
-- [x] Model comparison mode (A vs B)
-- [x] Custom assertions
-- [ ] ZK compliance certificates
-- [ ] Production monitoring & drift detection
+- [Docs](https://proofagent.dev)
+- [Quickstart](https://proofagent.dev/quickstart)
+- [AI Safety Leaderboard](https://proofagent.dev/leaderboard)
+- [Cost Calculator](https://proofagent.dev/cost-calculator)
 
 ## License
 
