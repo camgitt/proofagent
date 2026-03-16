@@ -11,6 +11,7 @@ Usage:
 
 from proofagent.__version__ import __version__
 from proofagent.compare import CompareResult, compare, compare_batch
+from proofagent.conversation import Conversation, ConversationTurn
 from proofagent.datasets import Dataset, load_dataset
 from proofagent.expect import Expectation, expect, register_assertion
 from proofagent.result import LLMResult, ToolCall, TrajectoryStep
@@ -20,6 +21,8 @@ __all__ = [
     "compare",
     "compare_batch",
     "CompareResult",
+    "Conversation",
+    "ConversationTurn",
     "Dataset",
     "expect",
     "Expectation",

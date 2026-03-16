@@ -217,7 +217,7 @@ def test(path, model, provider, verbose, k):
 @click.option(
     "--format",
     "fmt",
-    type=click.Choice(["terminal", "json"]),
+    type=click.Choice(["terminal", "json", "html"]),
     default="terminal",
 )
 def report(input_path, fmt):
@@ -233,6 +233,10 @@ def report(input_path, fmt):
         import json
 
         click.echo(json.dumps(data, indent=2))
+    elif fmt == "html":
+        from proofagent.compliance import generate_html_report
+
+        click.echo(generate_html_report(data))
     else:
         print_summary(data)
 
@@ -305,6 +309,148 @@ def dashboard(test_path, port, no_browser):
     click.echo("  \033[32mproofagent\033[0m dashboard")
     click.echo()
     serve(test_path=test_path, port=port, no_browser=no_browser)
+
+
+@cli.command()
+@click.option("--since", default=1, help="Compare against the Nth previous run (default: 1)")
+@click.option("--model", default=None, help="Filter history by model")
+def drift(since, model):
+    """Compare latest eval run to a previous run. Shows regressions and improvements."""
+    from proofagent import display
+    from proofagent.drift import detect_drift
+
+    report = detect_drift(since=since, model=model)
+    if report is None:
+        click.echo("Not enough history. Run evals at least twice first.")
+        sys.exit(1)
+
+    click.echo()
+    click.echo(
+        f"  Comparing run {report.latest_timestamp} vs {report.baseline_timestamp}"
+    )
+    click.echo()
+
+    if report.regressions:
+        click.echo(display.fail_text(f"  REGRESSIONS ({len(report.regressions)}):"))
+        for r in report.regressions:
+            click.echo(f"    {r['name']}: PASSED \u2192 FAILED")
+        click.echo()
+
+    if report.improvements:
+        click.echo(display.pass_text(f"  IMPROVEMENTS ({len(report.improvements)}):"))
+        for r in report.improvements:
+            click.echo(f"    {r['name']}: FAILED \u2192 PASSED")
+        click.echo()
+
+    if not report.regressions and not report.improvements:
+        click.echo("  No test status changes.")
+        click.echo()
+
+    sign = "+" if report.score_change >= 0 else ""
+    click.echo(f"  Score: {sign}{report.score_change:.0f}pp change")
+
+    sign = "+" if report.cost_change >= 0 else ""
+    click.echo(f"  Cost:  {sign}{report.cost_change:.0f}% change")
+    click.echo()
+
+    if report.is_regression:
+        sys.exit(1)
+
+
+@cli.command()
+@click.argument("test_path", default="tests/")
+@click.option(
+    "--models",
+    required=True,
+    help="Comma-separated list of models to evaluate",
+)
+@click.option(
+    "--min-score",
+    default=1.0,
+    type=float,
+    help="Minimum acceptable score (0.0-1.0, default: 1.0)",
+)
+def optimize(test_path, models, min_score):
+    """Find the cheapest model that passes your eval suite.
+
+    Example: proofagent optimize tests/ --models gpt-4.1-mini,claude-sonnet-4-6,claude-haiku-4-5
+    """
+    from proofagent import display
+    from proofagent.optimize import optimize as run_optimize
+
+    model_list = [m.strip() for m in models.split(",") if m.strip()]
+    if len(model_list) < 2:
+        click.echo("  Error: provide at least 2 models to compare.")
+        sys.exit(1)
+
+    click.echo()
+    click.echo(f"  {display.BOLD}proofagent optimize{display.RST}")
+    click.echo()
+    click.echo(f"  Running tests against {len(model_list)} models...")
+    click.echo()
+
+    result = run_optimize(
+        test_path=test_path,
+        models=model_list,
+        min_score=min_score,
+    )
+
+    # Print results table
+    click.echo(
+        f"  {'Model':<25} {'Score':>8} {'Cost':>10}"
+    )
+    click.echo(f"  {'-' * 25} {'-' * 8} {'-' * 10}")
+
+    for mr in result.all_results:
+        tag = ""
+        if mr.model == result.recommended_model:
+            tag = f" {display.GREEN}<- recommended{display.RST}"
+
+        score_str = f"{mr.score:.0%}"
+        cost_str = f"${mr.cost:.4f}"
+
+        # Color the score
+        if mr.score >= min_score:
+            score_str = display.pass_text(score_str)
+        elif mr.score >= 0.5:
+            score_str = f"{display.YELLOW}{mr.score:.0%}{display.RST}"
+        else:
+            score_str = display.fail_text(f"{mr.score:.0%}")
+
+        click.echo(
+            f"  {mr.model:<25} {score_str:>20} {cost_str:>10}{tag}"
+        )
+
+    click.echo()
+
+    # Print recommendation
+    if result.recommended_model == result.current_model and result.savings_percent == 0:
+        click.echo(
+            f"  {display.pass_text('Already optimal:')} {result.current_model} is the cheapest passing model."
+        )
+    else:
+        click.echo(
+            f"  {display.BOLD}Recommendation:{display.RST} Switch to "
+            f"{display.pass_text(result.recommended_model)}"
+        )
+        if result.recommended_score == result.current_score:
+            click.echo(
+                f"  Same score, {result.savings_percent:.0f}% cheaper "
+                f"(${result.current_cost:.4f} -> ${result.recommended_cost:.4f})"
+            )
+        elif result.recommended_score >= min_score:
+            click.echo(
+                f"  Score {result.recommended_score:.0%} (passes threshold), "
+                f"{result.savings_percent:.0f}% cheaper "
+                f"(${result.current_cost:.4f} -> ${result.recommended_cost:.4f})"
+            )
+        else:
+            click.echo(
+                f"  Best available: score {result.recommended_score:.0%}, "
+                f"cost ${result.recommended_cost:.4f}"
+            )
+
+    click.echo()
 
 
 @cli.command(name="compare")
@@ -389,3 +535,60 @@ def _print_compare_table(result):
     if result.winner:
         click.echo(f"\n  Winner: {result.winner}")
     click.echo()
+
+
+@cli.group()
+def snapshot():
+    """Manage regression snapshots."""
+    pass
+
+
+@snapshot.command(name="list")
+@click.option(
+    "--dir", "snapshot_dir", default=None, help="Snapshot directory override"
+)
+def snapshot_list(snapshot_dir):
+    """Show all saved snapshots."""
+    from pathlib import Path
+
+    from proofagent.snapshots import list_snapshots
+
+    sd = Path(snapshot_dir) if snapshot_dir else None
+    names = list_snapshots(sd)
+    if not names:
+        click.echo("No snapshots found.")
+        return
+    click.echo(f"  {len(names)} snapshot(s):\n")
+    for name in names:
+        click.echo(f"    {name}")
+    click.echo()
+
+
+@snapshot.command(name="clear")
+@click.option(
+    "--dir", "snapshot_dir", default=None, help="Snapshot directory override"
+)
+def snapshot_clear(snapshot_dir):
+    """Delete all snapshots."""
+    from pathlib import Path
+
+    from proofagent.snapshots import delete_all_snapshots
+
+    sd = Path(snapshot_dir) if snapshot_dir else None
+    count = delete_all_snapshots(sd)
+    click.echo(f"Deleted {count} snapshot(s).")
+
+
+@snapshot.command(name="update")
+@click.option(
+    "--dir", "snapshot_dir", default=None, help="Snapshot directory override"
+)
+def snapshot_update(snapshot_dir):
+    """Re-save all snapshots from latest results."""
+    from pathlib import Path
+
+    from proofagent.snapshots import delete_all_snapshots
+
+    sd = Path(snapshot_dir) if snapshot_dir else None
+    count = delete_all_snapshots(sd)
+    click.echo(f"Cleared {count} snapshot(s). Next test run will create fresh snapshots.")

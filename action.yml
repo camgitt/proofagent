@@ -1,0 +1,48 @@
+name: "proofagent"
+description: "Run proofagent eval tests and quality gate in CI"
+branding:
+  icon: "shield"
+  color: "green"
+
+inputs:
+  test-path:
+    description: "Path to test directory or file"
+    required: false
+    default: "tests/"
+  min-score:
+    description: "Minimum pass rate (0.0-1.0) for the quality gate"
+    required: false
+    default: "0.85"
+  max-cost:
+    description: "Maximum total cost in USD (optional)"
+    required: false
+    default: ""
+  python-version:
+    description: "Python version to use"
+    required: false
+    default: "3.11"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install proofagent
+      shell: bash
+      run: pip install proofagent
+
+    - name: Run tests
+      shell: bash
+      run: python -m pytest ${{ inputs.test-path }} --tb=short
+
+    - name: Run quality gate
+      shell: bash
+      run: |
+        GATE_CMD="proofagent gate --min-score ${{ inputs.min-score }} --block-on-fail"
+        if [ -n "${{ inputs.max-cost }}" ]; then
+          GATE_CMD="$GATE_CMD --max-cost ${{ inputs.max-cost }}"
+        fi
+        $GATE_CMD

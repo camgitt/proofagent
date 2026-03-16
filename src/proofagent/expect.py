@@ -11,9 +11,13 @@ from __future__ import annotations
 
 import json
 import re
+from pathlib import Path
 from typing import Any, Callable
 
 from proofagent.result import LLMResult, ToolCall
+
+# Lazy import to avoid circular dependency
+# from proofagent.conversation import Conversation
 
 
 # Refusal indicators — phrases that signal a model refused a request
@@ -52,24 +56,29 @@ _REFUSAL_PATTERNS = [
 ]
 
 
-def expect(result: LLMResult | str) -> Expectation:
-    """Create an Expectation for fluent assertions on an LLM result.
+def expect(result: LLMResult | str | Any) -> Expectation:
+    """Create an Expectation for fluent assertions on an LLM result or conversation.
 
     Args:
-        result: An LLMResult or a plain string (auto-wrapped into LLMResult).
+        result: An LLMResult, a plain string (auto-wrapped into LLMResult),
+                or a Conversation for multi-turn assertions.
 
     Returns:
         Expectation instance with chainable assertion methods.
     """
+    from proofagent.conversation import Conversation
+
+    if isinstance(result, Conversation):
+        return Expectation(result)
     if isinstance(result, str):
         result = LLMResult(text=result)
     return Expectation(result)
 
 
 class Expectation:
-    """Chainable assertions on an LLMResult."""
+    """Chainable assertions on an LLMResult or Conversation."""
 
-    def __init__(self, result: LLMResult):
+    def __init__(self, result: LLMResult | Any):
         self._result = result
 
     @property
@@ -273,6 +282,39 @@ class Expectation:
             raise AssertionError(f"Custom assertion '{name}' returned False")
         return self
 
+    def matches_snapshot(
+        self,
+        name: str,
+        snapshot_dir: Path | None = None,
+    ) -> Expectation:
+        """Assert the output matches a saved snapshot.
+
+        On the first run (no snapshot exists), saves the current output as the
+        snapshot and passes. On subsequent runs, compares current output to the
+        saved snapshot and raises AssertionError with a diff if they differ.
+
+        Args:
+            name: Unique snapshot name (used as filename stem).
+            snapshot_dir: Override snapshot directory (useful for testing).
+        """
+        from proofagent.snapshots import diff_snapshot, load_snapshot, save_snapshot
+
+        current = self._result.to_dict()
+        saved = load_snapshot(name, snapshot_dir)
+
+        if saved is None:
+            save_snapshot(name, current, snapshot_dir)
+            return self
+
+        if saved != current:
+            diff = diff_snapshot(name, current, snapshot_dir)
+            raise AssertionError(
+                f"Snapshot '{name}' does not match current output.\n"
+                f"Run 'proofagent snapshot update' to accept changes.\n\n"
+                f"{diff}"
+            )
+        return self
+
     def not_contains(self, text: str, case_sensitive: bool = True) -> Expectation:
         """Assert the output does NOT contain a substring."""
         output = self._result.text
@@ -303,6 +345,56 @@ class Expectation:
             raise AssertionError(
                 f"Expected output length over {min_chars} but got {length}"
             )
+        return self
+
+    # --- Conversation assertions ---
+
+    def turn_count(self, n: int) -> Expectation:
+        """Assert the conversation has exactly n turns."""
+        from proofagent.conversation import Conversation
+
+        if not isinstance(self._result, Conversation):
+            raise TypeError("turn_count() requires a Conversation, not LLMResult")
+        actual = len(self._result.turns)
+        if actual != n:
+            raise AssertionError(
+                f"Expected {n} turns but conversation has {actual}"
+            )
+        return self
+
+    def all_turns_cost_under(self, max_cost: float) -> Expectation:
+        """Assert total cost across all turns is under max_cost (USD)."""
+        from proofagent.conversation import Conversation
+
+        if not isinstance(self._result, Conversation):
+            raise TypeError(
+                "all_turns_cost_under() requires a Conversation, not LLMResult"
+            )
+        total = self._result.total_cost
+        if total > max_cost:
+            raise AssertionError(
+                f"Expected total conversation cost under ${max_cost:.4f} "
+                f"but got ${total:.4f}"
+            )
+        return self
+
+    def no_turn_refused(self) -> Expectation:
+        """Assert no turn in the conversation was classified as refused."""
+        from proofagent.conversation import Conversation
+
+        if not isinstance(self._result, Conversation):
+            raise TypeError(
+                "no_turn_refused() requires a Conversation, not LLMResult"
+            )
+        for i, turn in enumerate(self._result.turns):
+            text_lower = turn.result.text.lower()
+            for pattern in _REFUSAL_PATTERNS:
+                if pattern in text_lower:
+                    raise AssertionError(
+                        f"Turn {i} appears to be a refusal "
+                        f"(matched '{pattern}'):\n"
+                        f"  {turn.result.text[:200]}"
+                    )
         return self
 
 
