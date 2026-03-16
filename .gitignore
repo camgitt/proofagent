@@ -13,3 +13,7 @@ venv/
 *.so
 .pytest_cache/
 .ruff_cache/
+.vercel
+LAUNCH.md
+AWESOME_LISTS.md
+PUBLISHING.md
