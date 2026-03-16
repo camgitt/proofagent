@@ -5,14 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>proofagent — pytest for AI agents</title>
-<meta name="description" content="Open-source evaluation framework for AI agents. 16 assertions, 8 providers, zero telemetry. Just Python.">
+<meta name="description" content="Open-source evaluation framework for AI agents. 20 assertions, 8 providers, zero telemetry. Just Python.">
 <meta property="og:title" content="proofagent — pytest for AI agents">
-<meta property="og:description" content="Catch AI agent failures before your users do. 16 assertions, 8 providers, zero telemetry.">
+<meta property="og:description" content="Catch AI agent failures before your users do. 20 assertions, 8 providers, zero telemetry.">
 <meta property="og:image" content="https://proofagent.dev/og.svg">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="proofagent — pytest for AI agents">
-<meta name="twitter:description" content="Catch AI agent failures before your users do. 16 assertions, 8 providers, zero telemetry.">
+<meta name="twitter:description" content="Catch AI agent failures before your users do. 20 assertions, 8 providers, zero telemetry.">
 <meta name="twitter:image" content="https://proofagent.dev/og.svg">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
@@ -500,7 +500,7 @@
   <!-- === STATS === -->
   <section class="stats">
     <div class="stat">
-      <span class="stat-num">16</span>
+      <span class="stat-num">20</span>
       <span class="stat-label">assertions</span>
     </div>
     <div class="stat">
@@ -651,24 +651,40 @@
     <h2>What's included</h2>
     <div class="feature-grid">
       <div class="feature">
-        <h3>16 assertions</h3>
-        <p>contains, refused, valid_json, semantic_match, tool_calls_contain, cost_under, latency_under, regex, and more. All chainable.</p>
+        <h3>20 assertions</h3>
+        <p>contains, refused, valid_json, semantic_match, tool_calls_contain, matches_snapshot, turn_count, and more. All chainable.</p>
+      </div>
+      <div class="feature">
+        <h3>4 prompt packs</h3>
+        <p>Safety, bias, accuracy, hallucination. Run <code>proofagent scan model --pack bias</code> for instant results. 40 prompts total.</p>
+      </div>
+      <div class="feature">
+        <h3>Regression snapshots</h3>
+        <p>Save model outputs as baselines. Future runs compare automatically. Like Jest snapshots, but for AI.</p>
+      </div>
+      <div class="feature">
+        <h3>Model drift detection</h3>
+        <p>Track scores over time. <code>proofagent drift</code> catches when a provider silently changes model behavior.</p>
+      </div>
+      <div class="feature">
+        <h3>Cost optimizer</h3>
+        <p>Run your evals against multiple models. Get a recommendation for the cheapest one that passes.</p>
+      </div>
+      <div class="feature">
+        <h3>Conversation testing</h3>
+        <p>Test multi-turn dialogues. Check turn count, total cost, and whether any turn was refused.</p>
+      </div>
+      <div class="feature">
+        <h3>CI/CD gate + GitHub Action</h3>
+        <p>Block deploys that fail evaluation. 3-line GitHub Action setup. Set minimum pass rate and max cost.</p>
+      </div>
+      <div class="feature">
+        <h3>Compliance reports</h3>
+        <p><code>proofagent report --format html</code> generates a clean report for stakeholders. Pass rates, costs, per-test details.</p>
       </div>
       <div class="feature">
         <h3>8 providers</h3>
         <p>OpenAI, Anthropic, Gemini, Ollama, Mistral, Groq, Together, Azure. Or any OpenAI-compatible endpoint.</p>
-      </div>
-      <div class="feature">
-        <h3>CI/CD gate</h3>
-        <p>Block deploys that fail evaluation. Set minimum pass rate and max cost. One line in your GitHub Actions workflow.</p>
-      </div>
-      <div class="feature">
-        <h3>Cost tracking</h3>
-        <p>Every test logs token usage and cost. Set budgets per test. Know exactly what your AI is costing you.</p>
-      </div>
-      <div class="feature">
-        <h3>Offline mode</h3>
-        <p>Test assertions without API keys. Construct LLMResult directly and validate locally. CI runs don't need credentials.</p>
       </div>
       <div class="feature">
         <h3>Zero config</h3>
@@ -691,6 +707,9 @@
         <tr><td>Cost tracking</td><td class="no">Manual</td><td class="no">Via platform</td><td class="yes">Built-in</td></tr>
         <tr><td>Telemetry</td><td>Default on</td><td>Default on</td><td class="yes">Zero</td></tr>
         <tr><td>Cloud required</td><td class="no">Optional</td><td>For dashboard</td><td class="yes">Never</td></tr>
+        <tr><td>Snapshots</td><td class="no">No</td><td class="no">No</td><td class="yes">Built-in</td></tr>
+        <tr><td>Drift detection</td><td class="no">No</td><td class="no">No</td><td class="yes">Built-in</td></tr>
+        <tr><td>Cost optimizer</td><td class="no">No</td><td class="no">No</td><td class="yes">Built-in</td></tr>
         <tr><td>Setup</td><td>Config files</td><td>Decorators</td><td class="yes">pip install + go</td></tr>
       </tbody>
     </table>

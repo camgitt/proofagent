@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.0 (2026-03-16)
+
+- Add multi-turn conversation testing (`Conversation` class, `turn_count`, `all_turns_cost_under`, `no_turn_refused`)
+- Add regression snapshots (`matches_snapshot` assertion, `proofagent snapshot` CLI)
+- Add model drift detection (`proofagent drift` — compare runs, catch regressions)
+- Add cost optimizer (`proofagent optimize` — find cheapest model that passes your evals)
+- Add 3 new prompt packs: bias (10), accuracy (10), hallucination (10)
+- Add HTML compliance report generation (`proofagent report --format html`)
+- Add GitHub Actions reusable action (`action.yml`)
+- Add "Tested with proofagent" badge SVG
+
 ## 0.6.1 (2026-03-16)
 
 - Fix PyPI description to accurately reflect current features
