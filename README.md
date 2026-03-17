@@ -1,5 +1,5 @@
 <p align="center">
-  <h1 align="center">proofagent</h1>
+  <h1 align="center">proofagent™</h1>
   <p align="center"><strong>pytest for AI agents</strong></p>
 </p>
 
