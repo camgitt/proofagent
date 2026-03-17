@@ -1,7 +1,9 @@
 # Changelog
 
-## 0.7.1 (2026-03-16)
+## 0.7.2 (2026-03-16)
 
+- Add `proofagent doctor` command — checks Python, pytest, API keys, provider SDKs
+- Fix: detect GEMINI_API_KEY in addition to GOOGLE_API_KEY
 - Fix: add pytest as core dependency (was only in dev extras)
 - Fix: clear error message when no API key is set instead of cryptic import error
 

@@ -17,6 +17,84 @@ def cli():
 
 
 @cli.command()
+def doctor():
+    """Check your setup: Python, providers, API keys, dependencies."""
+    import importlib
+    import platform
+
+    click.echo()
+    click.echo("  \033[1mproofagent doctor\033[0m")
+    click.echo()
+
+    # Python version
+    py_version = platform.python_version()
+    if tuple(int(x) for x in py_version.split(".")[:2]) >= (3, 9):
+        click.echo(f"  \033[32m✓\033[0m Python {py_version}")
+    else:
+        click.echo(f"  \033[31m✗\033[0m Python {py_version} (need 3.9+)")
+
+    # proofagent version
+    click.echo(f"  \033[32m✓\033[0m proofagent {__version__}")
+
+    # pytest
+    try:
+        import pytest
+        click.echo(f"  \033[32m✓\033[0m pytest {pytest.__version__}")
+    except ImportError:
+        click.echo("  \033[31m✗\033[0m pytest not installed")
+
+    click.echo()
+
+    # API keys
+    import os
+    keys = {
+        "OPENAI_API_KEY": "openai",
+        "ANTHROPIC_API_KEY": "anthropic",
+        "GOOGLE_API_KEY": "gemini",
+        "GEMINI_API_KEY": "gemini",
+    }
+    found_keys = []
+    for env_var, provider_name in keys.items():
+        val = os.getenv(env_var)
+        if val:
+            click.echo(f"  \033[32m✓\033[0m {env_var} set ({provider_name})")
+            found_keys.append(provider_name)
+
+    if not found_keys:
+        click.echo("  \033[33m!\033[0m No API keys found (offline mode only)")
+        click.echo("    Set one: export ANTHROPIC_API_KEY=sk-...")
+
+    click.echo()
+
+    # Provider SDKs
+    providers = {
+        "openai": "openai",
+        "anthropic": "anthropic",
+        "google.genai": "gemini (google-genai)",
+        "ollama": "ollama",
+    }
+    for module, label in providers.items():
+        try:
+            importlib.import_module(module)
+            click.echo(f"  \033[32m✓\033[0m {label} SDK installed")
+        except ImportError:
+            click.echo(f"  \033[2m-\033[0m {label} SDK not installed")
+
+    # Ollama running check
+    try:
+        import requests
+        resp = requests.get("http://localhost:11434/api/version", timeout=2)
+        if resp.status_code == 200:
+            click.echo(f"  \033[32m✓\033[0m Ollama running (localhost:11434)")
+    except Exception:
+        pass
+
+    click.echo()
+    click.echo("  \033[32mReady.\033[0m Run \033[1mproofagent init\033[0m to get started.")
+    click.echo()
+
+
+@cli.command()
 def init():
     """Create a starter test file and run it. The fastest way to get started."""
     import os

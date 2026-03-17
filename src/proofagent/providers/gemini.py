@@ -28,7 +28,7 @@ class GeminiProvider(Provider):
                 "Google GenAI SDK not installed. Run: pip install proofagent[gemini]"
             )
         self._client = genai.Client(
-            api_key=api_key or os.getenv("GOOGLE_API_KEY"),
+            api_key=api_key or os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"),
         )
 
     def name(self) -> str:

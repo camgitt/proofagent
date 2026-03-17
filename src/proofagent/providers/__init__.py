@@ -48,7 +48,7 @@ def _detect_provider() -> str:
         return "openai"
     if os.getenv("ANTHROPIC_API_KEY"):
         return "anthropic"
-    if os.getenv("GOOGLE_API_KEY"):
+    if os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY"):
         return "gemini"
     # Check if ollama is available before defaulting to it
     try:
