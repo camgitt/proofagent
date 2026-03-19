@@ -234,6 +234,13 @@ proofagent scan --provider openai --model gpt-4o
 # Run in CI with machine-readable output
 proofagent scan --provider openai --model gpt-4o --ci</code></pre>
 
+    <h3>Test any deployed agent by URL</h3>
+
+    <p>Something Promptfoo can't do: test a live, deployed agent by pointing at its endpoint. No SDK integration, no code changes on the agent side.</p>
+
+<pre><code># Test any deployed agent — just paste the URL
+proofagent skill run --endpoint https://your-agent.com/api/chat --skill coding</code></pre>
+
     <p>The key differences: Promptfoo uses YAML configuration and LLM-as-judge rubrics. proofagent uses deterministic assertions and standard Python testing. Promptfoo results live in a local web dashboard. proofagent results print to stdout and integrate with any test runner that supports pytest.</p>
 
     <h2>The bottom line</h2>

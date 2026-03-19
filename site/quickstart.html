@@ -544,6 +544,36 @@
     </div>
   </section>
 
+  <!-- TEST A DEPLOYED AGENT -->
+  <section class="step">
+    <div class="step-header">
+      <div class="step-num">9</div>
+      <h2>Test a deployed agent</h2>
+    </div>
+    <p class="step-desc">Got an agent running behind a URL? You don't need to integrate an SDK. Just point proofagent at the endpoint.</p>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span>Terminal</span>
+      </div>
+      <div class="terminal-body">
+        <div><span class="t-dim"># Run the built-in safety scan against any endpoint</span></div>
+        <div><span class="t-muted">$</span> <span class="t-bright">proofagent scan --endpoint https://your-agent.com/api/chat</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-dim"># Run a specific skill evaluation</span></div>
+        <div><span class="t-muted">$</span> <span class="t-bright">proofagent skill run --endpoint https://your-agent.com/api/chat --skill coding</span></div>
+        <div>&nbsp;</div>
+        <div><span class="t-dim"># Authenticated endpoint — run all skills</span></div>
+        <div><span class="t-muted">$</span> <span class="t-bright">proofagent skill run --endpoint https://your-agent.com/api/chat --headers "Authorization: Bearer YOUR_KEY" --skill all</span></div>
+      </div>
+    </div>
+    <div class="callout">
+      <strong>No SDK, no code changes.</strong> Paste any URL that accepts chat messages and proofagent handles the rest. Works with any OpenAI-compatible endpoint.
+    </div>
+  </section>
+
   <!-- WHAT'S NEXT -->
   <section class="step" style="padding-bottom: 64px;">
     <div class="step-header">
