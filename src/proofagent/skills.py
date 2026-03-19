@@ -59,6 +59,26 @@ SKILL_PACKS: dict[str, dict] = {
                 prompt="Write a Python decorator that retries a function up to N times with exponential backoff when it raises an exception.",
                 rubric="Working decorator with configurable retries and exponential backoff. Handles the final exception correctly. Clean implementation.",
             ),
+            SkillChallenge(
+                prompt="Implement a binary search function that takes a sorted list and a target value, returning the index if found or -1 if not.",
+                rubric="Correct iterative or recursive binary search with O(log n) time complexity. Handles empty list, single element, target not found, and boundary elements.",
+            ),
+            SkillChallenge(
+                prompt="Write a function that validates email addresses using regex. It should accept standard emails like user@domain.com and reject invalid ones.",
+                rubric="Uses a reasonable regex pattern that accepts valid emails (local@domain.tld) and rejects obvious invalids (no @, no domain, spaces). Handles edge cases like subdomains and plus addressing. Not overly permissive or restrictive.",
+            ),
+            SkillChallenge(
+                prompt="Implement a simple stack data structure in Python with push, pop, and peek methods. Include error handling for empty stack operations.",
+                rubric="Working stack with push, pop, and peek. Raises appropriate errors on pop/peek of empty stack. Clean API. Optionally includes size/is_empty helpers.",
+            ),
+            SkillChallenge(
+                prompt="Write a function to find the longest common subsequence of two strings. Return the subsequence itself, not just its length.",
+                rubric="Correct dynamic programming solution that returns the actual subsequence string. Handles empty strings and strings with no common subsequence. O(m*n) time complexity.",
+            ),
+            SkillChallenge(
+                prompt="Implement a rate limiter class that allows a maximum of N requests per second. It should have an allow() method that returns True if the request is allowed.",
+                rubric="Working rate limiter using a sliding window or token bucket approach. Correctly tracks timestamps and enforces the rate limit. Thread-safety considerations are a bonus.",
+            ),
         ],
     },
     "reasoning": {
@@ -84,6 +104,26 @@ SKILL_PACKS: dict[str, dict] = {
             SkillChallenge(
                 prompt="A bat and a ball cost $1.10 in total. The bat costs $1.00 more than the ball. How much does the ball cost?",
                 rubric="Correctly answers $0.05 (not $0.10). Shows the algebra: if ball = x, bat = x + 1.00, so 2x + 1.00 = 1.10, x = 0.05.",
+            ),
+            SkillChallenge(
+                prompt="The Monty Hall problem: You pick door 1. The host opens door 3 (which has a goat). Should you switch to door 2? Explain why or why not with probabilities.",
+                rubric="Correctly concludes you should switch. Explains that switching gives 2/3 probability of winning vs 1/3 for staying. Reasoning is clear and accounts for the host's knowledge.",
+            ),
+            SkillChallenge(
+                prompt="Five pirates (A, B, C, D, E) must divide 100 gold coins. Pirate A proposes a distribution; all pirates vote. If at least half approve, the proposal passes; otherwise A is thrown overboard and B proposes, etc. Pirates are rational, greedy, and prefer survival. What does pirate A propose?",
+                rubric="Correct game theory solution: A proposes 98 for A, 0 for B, 1 for C, 0 for D, 1 for E (or equivalent valid distribution). Explains backward induction reasoning from the last pirate to the first.",
+            ),
+            SkillChallenge(
+                prompt="All roses are flowers. Some flowers fade quickly. Can we conclude that some roses fade quickly? Explain your reasoning using formal logic.",
+                rubric="Correctly identifies this as an invalid syllogism. The conclusion does not follow — the flowers that fade quickly might not include any roses. Explains the logical structure clearly.",
+            ),
+            SkillChallenge(
+                prompt="A clock shows 3:15. What is the exact angle between the hour and minute hands?",
+                rubric="Correctly calculates 7.5 degrees. Minute hand at 90 degrees (15 min * 6). Hour hand at 97.5 degrees (3 * 30 + 15 * 0.5). Difference = 7.5 degrees. Shows work.",
+            ),
+            SkillChallenge(
+                prompt="You have 8 coins that look identical, but one is lighter than the others. Using a balance scale exactly 2 times, how do you find the lighter coin?",
+                rubric="Correct solution: weigh 3 vs 3. If balanced, weigh the remaining 2 to find the lighter one. If unbalanced, take the lighter group of 3 and weigh 1 vs 1 — if balanced, the third is lighter; if not, the lighter side is the answer.",
             ),
         ],
     },
@@ -111,6 +151,26 @@ SKILL_PACKS: dict[str, dict] = {
                 prompt="A ladder 10 meters long leans against a wall. The bottom is 6 meters from the wall. How high up the wall does the ladder reach?",
                 rubric="Correctly applies Pythagorean theorem: height = sqrt(10^2 - 6^2) = sqrt(64) = 8 meters.",
             ),
+            SkillChallenge(
+                prompt="Find the sum of the infinite geometric series 1 + 1/2 + 1/4 + 1/8 + ... Show your work.",
+                rubric="Correctly identifies as geometric series with a=1, r=1/2. Uses formula S = a/(1-r) = 1/(1-0.5) = 2. Shows clear steps.",
+            ),
+            SkillChallenge(
+                prompt="What is the determinant of the matrix [[1,2],[3,4]]?",
+                rubric="Correctly computes det = (1)(4) - (2)(3) = 4 - 6 = -2. Shows the formula ad - bc.",
+            ),
+            SkillChallenge(
+                prompt="Solve: log base 2 of 32. Show your reasoning.",
+                rubric="Correctly answers 5. Explains that 2^5 = 32, so log_2(32) = 5. Clear reasoning.",
+            ),
+            SkillChallenge(
+                prompt="Find the area of a triangle with vertices at (0,0), (4,0), and (0,3).",
+                rubric="Correctly calculates area = 6. Uses either the formula (1/2)*base*height = (1/2)*4*3 = 6 or the shoelace formula. Shows work.",
+            ),
+            SkillChallenge(
+                prompt="What is the limit of (sin x)/x as x approaches 0? Explain why.",
+                rubric="Correctly states the limit is 1. Provides valid justification such as L'Hopital's rule (cos(0)/1 = 1), the squeeze theorem, or geometric argument. Clear explanation.",
+            ),
         ],
     },
     "writing": {
@@ -137,6 +197,26 @@ SKILL_PACKS: dict[str, dict] = {
                 prompt="Write a clear bug report for this issue: 'the app crashes when I click the settings button on an iPhone 12 running iOS 17'.",
                 rubric="Follows bug report structure: title, steps to reproduce, expected vs actual behavior, environment. Professional and actionable.",
             ),
+            SkillChallenge(
+                prompt="Write a one-paragraph company bio for a 10-person AI startup that builds developer tools. Keep it professional and under 80 words.",
+                rubric="Professional tone, concise, mentions AI and developer tools. Feels authentic, not generic. Under 80 words. Suitable for an About page or pitch deck.",
+            ),
+            SkillChallenge(
+                prompt="Rewrite this sentence in active voice: 'The report was completed by the team on Friday.'",
+                rubric="Correct active voice transformation: 'The team completed the report on Friday' or equivalent. Preserves all original meaning. Clear and natural.",
+            ),
+            SkillChallenge(
+                prompt="Write a 2-sentence product changelog entry for a new dark mode feature in a web application.",
+                rubric="Exactly 2 sentences. Announces the feature and highlights the benefit. Professional changelog tone (not marketing fluff). Mentions how to enable it.",
+            ),
+            SkillChallenge(
+                prompt="Write a professional out-of-office email auto-reply for a 2-week vacation. Include return date and alternative contact.",
+                rubric="Professional tone, includes dates, alternative contact info, and a brief note about limited availability. Well-structured and courteous.",
+            ),
+            SkillChallenge(
+                prompt="Write a one-paragraph executive summary for a project that is 2 weeks behind schedule. Be honest but constructive, and include a path forward.",
+                rubric="Acknowledges the delay directly without excuses. Briefly explains root cause. Provides a concrete recovery plan or revised timeline. Professional, constructive tone suitable for leadership.",
+            ),
         ],
     },
     "summarization": {
@@ -162,6 +242,26 @@ SKILL_PACKS: dict[str, dict] = {
             SkillChallenge(
                 prompt="Summarize the pros and cons of microservices architecture in a 2-column table format.",
                 rubric="Balanced pros/cons. Covers: scalability, independence, complexity, network overhead, deployment flexibility, debugging difficulty. Table format is clear.",
+            ),
+            SkillChallenge(
+                prompt="Explain the difference between SQL and NoSQL databases in 3 bullet points.",
+                rubric="Covers: structured vs flexible schema, vertical vs horizontal scaling, and use case differences (relational data vs unstructured/document data). Accurate and concise, exactly 3 bullets.",
+            ),
+            SkillChallenge(
+                prompt="Summarize the pros and cons of remote work in exactly 2 sentences.",
+                rubric="Exactly 2 sentences. Covers both benefits (flexibility, no commute, productivity) and drawbacks (isolation, collaboration challenges). Balanced and accurate.",
+            ),
+            SkillChallenge(
+                prompt="Explain what a neural network is to a high school student in one paragraph. No jargon.",
+                rubric="One paragraph using accessible language. Conveys the core idea: layers of connected nodes that learn patterns from data, inspired by the brain. Uses relatable analogies. Accurate without being oversimplified.",
+            ),
+            SkillChallenge(
+                prompt="List 3 key differences between HTTP and HTTPS.",
+                rubric="Covers: encryption (TLS/SSL), security of data in transit, and trust/certificates. Accurate, exactly 3 points. May mention port differences (80 vs 443) as a bonus.",
+            ),
+            SkillChallenge(
+                prompt="Summarize what version control (git) does in 2 sentences for a non-developer audience.",
+                rubric="Exactly 2 sentences. Conveys: tracks changes to files over time, enables collaboration and rollback. Uses simple language without git-specific jargon. Accurate.",
             ),
         ],
     },
