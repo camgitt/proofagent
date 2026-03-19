@@ -642,10 +642,15 @@ function copyBlock(btn) {
 // Scores are 0.0-10.0 averages
 // To populate with real data, run: proofagent skill run <model> --skill all
 // Then submit: proofagent skill submit .proofagent/skills/<file>.json
-// To populate with real data, run: python3 run_skill_leaderboard.py
-// Then paste the output JavaScript array here.
-// Models below were tested on [date] using proofagent skill run.
-const entries = [];
+// Tested March 19, 2026 using proofagent skill run. Judge: gemini-2.5-flash.
+// Add your model: proofagent skill run <model> --skill all
+const entries = [
+  {
+    model: 'Gemini 2.5 Flash',
+    coding: 7.8, reasoning: 8.8, math: 10.0, writing: 10.0, summarization: 10.0,
+    verified: false, fingerprint: '21ca72c686c91a45',
+  },
+];
 
 // Computed fields
 entries.forEach(e => {
