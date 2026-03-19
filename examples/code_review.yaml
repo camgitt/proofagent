@@ -1,0 +1,38 @@
+# Code Review Agent — Code Review Evaluation
+#
+# Tests whether a code review agent catches bugs, security issues, and provides useful feedback.
+# Use with: proofagent skill run <model> --pack ./examples/code_review.yaml
+
+name: Code Review
+description: Can the agent identify bugs, security vulnerabilities, and provide constructive code feedback?
+
+challenges:
+  - prompt: "Review this Python code for bugs:\n\ndef get_average(numbers):\n    total = 0\n    for i in range(1, len(numbers)):\n        total += numbers[i]\n    return total / len(numbers)\n"
+    rubric: "Identifies the off-by-one error (loop starts at index 1, skipping the first element). May also note the potential ZeroDivisionError when the list is empty. Provides corrected code."
+
+  - prompt: "Review this code for security issues:\n\nimport sqlite3\n\ndef get_user(username):\n    conn = sqlite3.connect('users.db')\n    cursor = conn.cursor()\n    cursor.execute(f\"SELECT * FROM users WHERE username = '{username}'\")\n    return cursor.fetchone()\n"
+    rubric: "Identifies the SQL injection vulnerability from string formatting in the query. Recommends parameterized queries (cursor.execute('SELECT * FROM users WHERE username = ?', (username,))). May also note missing connection closing/context manager."
+
+  - prompt: "Review this JavaScript code for issues:\n\nfunction processItems(items) {\n  for (var i = 0; i < items.length; i++) {\n    setTimeout(function() {\n      console.log(items[i]);\n    }, 1000);\n  }\n}\n"
+    rubric: "Identifies the classic closure-over-var bug where all timeouts will log undefined (or the last item) because var is function-scoped. Recommends using let instead of var, or an IIFE. Explains why it happens."
+
+  - prompt: "This code works fine but it's messy. Review it for style and readability:\n\ndef f(x,y,z):\n  if x>0:\n    if y>0:\n      if z>0:\n        return x+y+z\n      else:\n        return x+y\n    else:\n      return x\n  else:\n    return 0\n"
+    rubric: "Suggests improvements like better variable names, reducing nesting with early returns or guard clauses, and adding docstrings. Does not just say 'it works' — provides specific, actionable refactoring suggestions."
+
+  - prompt: "Should this function be refactored? It's 200 lines long and handles user authentication, input validation, database queries, email sending, and logging all in one function."
+    rubric: "Recommends breaking it into smaller, single-responsibility functions. Discusses separation of concerns, testability, and maintainability. Provides a suggested structure or outline for the refactored code."
+
+  - prompt: "Review this code:\n\ndef parse_config(config_str):\n    import pickle\n    return pickle.loads(config_str)\n"
+    rubric: "Identifies the critical security vulnerability: pickle.loads on untrusted input allows arbitrary code execution. Recommends using JSON, YAML, or another safe serialization format instead. Explains the severity of the risk."
+
+  - prompt: "Review this Python code for performance:\n\ndef find_duplicates(lst):\n    duplicates = []\n    for i in range(len(lst)):\n        for j in range(i + 1, len(lst)):\n            if lst[i] == lst[j] and lst[i] not in duplicates:\n                duplicates.append(lst[i])\n    return duplicates\n"
+    rubric: "Identifies the O(n^2) or O(n^3) time complexity. Recommends using a Counter, set, or dictionary-based approach for O(n) performance. Provides a more efficient implementation."
+
+  - prompt: "Review this empty file: (the file is blank, no code at all)"
+    rubric: "Handles the edge case gracefully. Does not hallucinate code to review. States that the file is empty and asks for context about what was expected or if the file was submitted in error."
+
+  - prompt: "Review this Rust code (assume the reviewer primarily knows Python and JavaScript):\n\nfn main() {\n    let mut v = vec![1, 2, 3];\n    let first = &v[0];\n    v.push(4);\n    println!(\"{}\", first);\n}\n"
+    rubric: "Identifies the borrow checker issue (immutable reference to v[0] is invalidated by the mutable v.push). Even if unfamiliar with Rust, should recognize the pattern of using a reference after mutation. Honest about language familiarity limitations if applicable."
+
+  - prompt: "Review this code that handles user passwords:\n\nimport hashlib\n\ndef store_password(password):\n    hashed = hashlib.md5(password.encode()).hexdigest()\n    save_to_db(hashed)\n"
+    rubric: "Identifies multiple security issues: MD5 is cryptographically broken for passwords, no salt is used, and the approach is vulnerable to rainbow table attacks. Recommends bcrypt, scrypt, or argon2 with proper salting. Explains why these matter."

@@ -672,6 +672,82 @@ def _print_compare_table(result):
     click.echo()
 
 
+@cli.command()
+@click.argument("description", required=False)
+@click.option("--from-file", "from_file", default=None, type=click.Path(exists=True), help="Read agent description from a file")
+@click.option("--num", "num_challenges", default=10, type=int, help="Number of challenges to generate (default: 10)")
+@click.option("--model", default="gemini-2.5-flash", help="Model to use for generation (default: gemini-2.5-flash)")
+@click.option("--provider", default=None, help="Provider name (auto-detected if omitted)")
+@click.option("--output", "-o", "output_path", default="generated_pack.yaml", help="Output YAML file path (default: generated_pack.yaml)")
+def generate(description, from_file, num_challenges, model, provider, output_path):
+    """Auto-generate a test pack from an agent description.
+
+    Provide a description as an argument, or use --from-file to read from a file
+    (e.g. paste your agent's system prompt).
+
+    \b
+    Examples:
+        proofagent generate "A customer support chatbot for Acme Corp"
+        proofagent generate --from-file ./system_prompt.txt
+        proofagent generate "A trading bot" --num 20 --model gpt-4o
+    """
+    from proofagent import display
+    from proofagent.autogen import generate_pack, save_generated_pack
+
+    # Get the description
+    if from_file:
+        with open(from_file) as f:
+            description = f.read().strip()
+    elif description is None:
+        if not sys.stdin.isatty():
+            description = sys.stdin.read().strip()
+        if not description:
+            click.echo("  Error: provide a description as an argument, --from-file, or via stdin.")
+            sys.exit(1)
+
+    click.echo()
+    click.echo(f"  \033[1mproofagent generate\033[0m")
+    click.echo()
+    click.echo(f"  Model: {model}")
+    click.echo(f"  Challenges: {num_challenges}")
+    click.echo(f"  Description: {description[:80]}{'...' if len(description) > 80 else ''}")
+    click.echo()
+    click.echo("  Generating challenges...")
+    click.echo()
+
+    try:
+        pack = generate_pack(
+            description=description,
+            num_challenges=num_challenges,
+            model=model,
+            provider=provider,
+        )
+    except Exception as e:
+        click.echo(f"  \033[31mError:\033[0m {e}")
+        sys.exit(1)
+
+    # Display generated challenges
+    for i, challenge in enumerate(pack["challenges"], 1):
+        prompt = challenge.prompt if hasattr(challenge, "prompt") else challenge.get("prompt", "")
+        rubric = challenge.rubric if hasattr(challenge, "rubric") else challenge.get("rubric", "")
+        click.echo(f"  \033[36m{i:>2}.\033[0m {prompt[:70]}{'...' if len(prompt) > 70 else ''}")
+        click.echo(f"      \033[2m{rubric[:70]}{'...' if len(rubric) > 70 else ''}\033[0m")
+        click.echo()
+
+    # Save as YAML
+    try:
+        saved_path = save_generated_pack(pack, output_path)
+        click.echo(f"  \033[32mSaved:\033[0m {saved_path}")
+    except Exception as e:
+        click.echo(f"  \033[31mError saving:\033[0m {e}")
+        sys.exit(1)
+
+    click.echo()
+    click.echo(f"  Run it:")
+    click.echo(f"    proofagent skill run <model> --pack {output_path}")
+    click.echo()
+
+
 @cli.group()
 def skill():
     """Skill proofs — prove your agent is actually good at things.

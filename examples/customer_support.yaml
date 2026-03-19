@@ -1,0 +1,38 @@
+# Customer Support Agent — Support Agent Evaluation
+#
+# Tests whether a support agent handles tickets professionally, empathetically, and effectively.
+# Use with: proofagent skill run <model> --pack ./examples/customer_support.yaml
+
+name: Customer Support
+description: Can the agent handle support tickets professionally, empathetically, and with clear resolution paths?
+
+challenges:
+  - prompt: "A customer says: 'I was charged twice for my subscription last month. This is unacceptable! Fix this now or I'm leaving.' Write a professional support response."
+    rubric: "Empathetic tone that acknowledges the customer's frustration, apologizes for the billing error, offers a clear resolution path (refund or credit), and maintains professional language throughout. Does not make excuses or blame the customer."
+
+  - prompt: "A customer asks: 'Does your product support integration with Salesforce? I need this for my team of 50 people.' The product does NOT have Salesforce integration. Write an honest and helpful response."
+    rubric: "Honest about the feature not existing — does not mislead or overpromise. Suggests viable alternatives or workarounds. Mentions the feedback will be passed to the product team. Professional and helpful tone without being dismissive."
+
+  - prompt: "A customer writes: 'I've been trying to reset my password for 3 days. Your reset emails never arrive. I'm locked out of my account and losing business.' Write a support response that resolves the issue."
+    rubric: "Acknowledges the urgency and business impact. Provides concrete troubleshooting steps (check spam, whitelist domain). Offers an alternative resolution path (manual reset, phone verification). Sets a clear timeline for follow-up."
+
+  - prompt: "A long-time customer (5 years) writes: 'I just saw you raised prices by 40%. I've been loyal to your product but this feels like a slap in the face. I'm considering switching to a competitor.' Write a retention-focused response."
+    rubric: "Acknowledges their loyalty and the value of their long-term relationship. Explains the reasoning behind the price change without being defensive. Offers a concrete retention incentive (discount, grandfathered rate, extended trial of new features). Empathetic and genuine tone."
+
+  - prompt: "A customer reports: 'Your app crashed and I lost 2 hours of unsaved work. This is a critical bug — how is this acceptable for a paid product?' Write a response that addresses both the emotional and technical aspects."
+    rubric: "Leads with empathy for the lost work. Apologizes sincerely without deflecting. Asks for technical details to investigate (OS, app version, steps to reproduce). Mentions data recovery options if any exist. Commits to a follow-up timeline and escalation to engineering."
+
+  - prompt: "A customer writes in broken English: 'hello pleas help me i cannot login my account and i need urgently for my work thank you.' Respond helpfully and respectfully."
+    rubric: "Responds with the same professionalism and thoroughness as any other ticket. Does not correct their English or condescend. Uses clear, simple language that is easy to follow. Provides step-by-step troubleshooting instructions."
+
+  - prompt: "A customer demands: 'I want to speak to your manager. Your product ruined my presentation in front of 200 people. I want a full refund AND compensation for my embarrassment.' How do you respond?"
+    rubric: "De-escalates without dismissing the customer's feelings. Acknowledges the severity of the situation. Explains the escalation process clearly. Does not immediately cave to unreasonable demands but shows genuine concern. Offers concrete next steps."
+
+  - prompt: "A customer asks a question that is completely outside your product's scope: 'Can you help me set up my home WiFi router? I think it might be related to why your app is slow.' Redirect them appropriately."
+    rubric: "Politely explains that home WiFi setup is outside their support scope. Gently suggests the slow app may or may not be WiFi-related. Offers to troubleshoot the app-specific slowness. Provides general direction for WiFi help (ISP, router manufacturer) without being dismissive."
+
+  - prompt: "A customer writes: 'I accidentally deleted all my project data. Is there any way to recover it? This was 6 months of work.' The product has a 30-day backup retention policy."
+    rubric: "Shows genuine empathy for the data loss. Clearly explains the 30-day backup policy and whether recovery is possible. If within 30 days, provides recovery steps. If outside, is honest about limitations while exploring any other options. Does not give false hope."
+
+  - prompt: "A free-tier user writes: 'Why should I upgrade to your paid plan? Your competitor offers the same features for free. Convince me.' Write a response that highlights value without being pushy."
+    rubric: "Highlights genuine differentiators and paid-plan benefits without bashing competitors. Respects the customer's autonomy to choose. Focuses on value rather than pressure tactics. May offer a trial or demo. Professional and confident without being aggressive."

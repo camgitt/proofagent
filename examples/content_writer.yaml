@@ -1,0 +1,39 @@
+# Content Writer — Copywriting Agent Evaluation
+#
+# Tests whether a content/copywriting agent produces quality output with proper tone,
+# SEO awareness, and factual accuracy.
+# Use with: proofagent skill run <model> --pack ./examples/content_writer.yaml
+
+name: Content Writer
+description: Can the agent produce quality content with proper tone, SEO awareness, length compliance, and factual accuracy?
+
+challenges:
+  - prompt: "Write a blog post title and meta description targeting the keyword 'AI testing tools'. Optimize for search engines."
+    rubric: "Title includes the target keyword naturally, is under 60 characters, and is compelling enough to drive clicks. Meta description is 150-160 characters, includes the keyword, and has a clear value proposition. Does not keyword-stuff."
+
+  - prompt: "Write a product announcement paragraph in a formal, professional tone suitable for an enterprise software company."
+    rubric: "Maintains a consistently formal, professional tone throughout. No slang, contractions, or casual language. Reads like it belongs in an enterprise press release or corporate blog. Clear and authoritative."
+
+  - prompt: "Rewrite this sentence in a casual, friendly tone suitable for a startup blog: 'Our organization has implemented a comprehensive solution to address the inefficiencies in the current workflow paradigm.'"
+    rubric: "Successfully transforms the corporate jargon into natural, casual language. Uses contractions, simpler words, and a conversational feel. Preserves the core meaning while making it approachable and human."
+
+  - prompt: "Write a technical blog introduction about Kubernetes for a developer audience. Keep it accurate and jargon-appropriate."
+    rubric: "Uses technical terminology correctly and appropriately for developers. Does not over-explain basics that developers would know. Accurate about what Kubernetes is and does. Engaging hook that speaks to developer pain points."
+
+  - prompt: "Write exactly 100 words about the benefits of remote work. Count must be exact."
+    rubric: "Word count is exactly 100 (within +/- 2 tolerance). Content is coherent and well-structured despite the constraint. Covers meaningful benefits, not filler. Each sentence adds value."
+
+  - prompt: "Write a 280-character tweet announcing a new mobile app feature (dark mode). Make it engaging."
+    rubric: "Stays within 280 characters. Engaging and shareable. Mentions the feature clearly. Includes appropriate tone for social media (not corporate-speak). May include a call to action or emoji if appropriate."
+
+  - prompt: "Write a paragraph about how photosynthesis works. It must be factually accurate — do not make up any scientific details."
+    rubric: "Scientifically accurate description of photosynthesis (light energy, CO2, water, glucose, oxygen). No fabricated chemical processes or made-up terminology. Accessible but correct. Does not oversimplify to the point of inaccuracy."
+
+  - prompt: "Write a short product description for a fictional SaaS product called 'DataPulse' that provides real-time analytics. Do not hallucinate features — only describe what I've told you."
+    rubric: "Only describes real-time analytics as the core feature. Does not invent specific features, integrations, pricing, or capabilities not mentioned. Honest about working with limited information while still writing compelling copy."
+
+  - prompt: "Write an email subject line and preview text for a Black Friday sale. The discount is 30% off all plans."
+    rubric: "Subject line is compelling and mentions the discount or Black Friday. Under 50 characters ideally. Preview text adds urgency or detail without repeating the subject. Does not use spammy ALL CAPS or excessive punctuation."
+
+  - prompt: "Write about the history of quantum computing. I want this to be well-researched and accurate — do not make up dates, names, or events."
+    rubric: "Mentions real milestones (Feynman's 1981 proposal, Shor's algorithm 1994, D-Wave, Google's quantum supremacy claim 2019, etc.). Dates and names are accurate. Does not fabricate researchers, papers, or breakthroughs. Acknowledges uncertainty where appropriate."
