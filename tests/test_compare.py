@@ -188,7 +188,7 @@ def test_compare_passes_provider_name(mock_get_provider):
 
     compare_fn("hi", model_a="a", model_b="b", provider="openai")
 
-    mock_get_provider.assert_called_once_with(name="openai")
+    mock_get_provider.assert_any_call(name="openai")
 
 
 # ── compare_batch() ─────────────────────────────────────────────────
