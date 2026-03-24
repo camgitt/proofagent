@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<title>OpenAI Bought Astral. The Python Dev Stack Is Being Consolidated. — proofagent</title>
+<meta name="description" content="OpenAI acquired Astral (uv, ruff, ty) days after buying Promptfoo. Your linter, package manager, and eval tool are now owned by one model vendor.">
+<link rel="canonical" href="https://proofagent.dev/blog/openai-astral-python-consolidation" />
+<meta property="og:title" content="OpenAI Bought Astral. The Python Dev Stack Is Being Consolidated.">
+<meta property="og:description" content="Your linter, package manager, and eval tool — all owned by one model vendor. What this means for Python developers.">
+<meta property="og:image" content="https://proofagent.dev/og.png">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://proofagent.dev/blog/openai-astral-python-consolidation">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="OpenAI Bought Astral. The Python Dev Stack Is Being Consolidated.">
+<meta name="twitter:description" content="Your linter, package manager, and eval tool — all owned by one model vendor.">
+<meta name="twitter:image" content="https://proofagent.dev/og.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "OpenAI Bought Astral. The Python Dev Stack Is Being Consolidated.",
+  "description": "OpenAI acquired Astral (uv, ruff, ty) days after buying Promptfoo. Your linter, package manager, and eval tool are now owned by one model vendor.",
+  "datePublished": "2026-03-19",
+  "author": { "@type": "Organization", "name": "proofagent" },
+  "publisher": { "@type": "Organization", "name": "proofagent", "url": "https://proofagent.dev" },
+  "url": "https://proofagent.dev/blog/openai-astral-python-consolidation"
+}
+</script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: oklch(0.145 0.012 255);
+    --bg-raised: oklch(0.175 0.014 255);
+    --bg-inset: oklch(0.125 0.01 255);
+    --border: oklch(0.26 0.012 255);
+    --border-subtle: oklch(0.22 0.01 255);
+    --text: oklch(0.92 0.008 255);
+    --text-2: oklch(0.68 0.01 255);
+    --text-3: oklch(0.48 0.008 255);
+    --text-4: oklch(0.36 0.006 255);
+    --pass: oklch(0.70 0.16 158);
+    --fail: oklch(0.68 0.19 22);
+    --warn: oklch(0.76 0.13 80);
+    --accent: oklch(0.70 0.14 260);
+  }
+
+  html { font-size: 16px; }
+  body {
+    font-family: 'IBM Plex Sans', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 720px; margin: 0 auto; padding: 0 24px; }
+
+  nav { padding: 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .nav-brand { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; color: var(--text); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+  .nav-logo { width: 22px; height: 22px; }
+  .nav-links { display: flex; gap: 24px; list-style: none; }
+  .nav-links a { font-size: 13px; color: var(--text-3); text-decoration: none; transition: color 0.15s; }
+  .nav-links a:hover { color: var(--text); }
+
+  .back-link { display: inline-block; margin-top: 48px; font-size: 13px; color: var(--text-3); text-decoration: none; }
+  .back-link:hover { color: var(--text); }
+
+  article { margin: 16px 0 80px; }
+  article h1 { font-size: 32px; font-weight: 300; letter-spacing: -0.5px; line-height: 1.2; margin-bottom: 12px; }
+  article h1 strong { font-weight: 700; }
+  .article-meta { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--text-4); margin-bottom: 40px; }
+
+  article h2 { font-size: 20px; font-weight: 600; margin: 40px 0 12px; }
+  article h3 { font-size: 16px; font-weight: 600; margin: 28px 0 8px; }
+  article p { font-size: 15px; color: var(--text-2); line-height: 1.75; margin-bottom: 16px; }
+  article ul, article ol { margin: 0 0 16px 20px; }
+  article li { font-size: 15px; color: var(--text-2); line-height: 1.75; margin-bottom: 4px; }
+  article a { color: var(--accent); text-decoration: underline; }
+  article a:hover { color: var(--text); }
+
+  pre {
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0 24px;
+    overflow-x: auto;
+  }
+  pre code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+  code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    background: var(--bg-inset);
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+
+  .timeline {
+    margin: 24px 0 32px;
+    padding: 0;
+    list-style: none;
+  }
+  .timeline li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.75;
+  }
+  .timeline li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--fail);
+  }
+
+  .cta {
+    margin: 48px 0 80px;
+    padding: 32px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    text-align: center;
+  }
+  .cta p { font-size: 15px; color: var(--text-2); margin-bottom: 16px; }
+  .cta code {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    background: var(--bg-inset);
+    border: 1px solid var(--border);
+    padding: 8px 20px;
+    border-radius: 6px;
+    color: var(--text);
+  }
+
+  footer { padding: 32px 0; border-top: 1px solid var(--border-subtle); text-align: center; }
+  footer p { font-size: 12px; color: var(--text-4); }
+  footer a { color: var(--text-3); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="nav-brand" href="/">
+      <img class="nav-logo" src="/logo.svg" alt="proofagent">
+      proofagent
+    </a>
+    <ul class="nav-links">
+      <li><a href="/quickstart">Quickstart</a></li>
+      <li><a href="/leaderboard">Safety</a></li>
+      <li><a href="/skills">Skills</a></li>
+      <li><a href="/blog/" style="color:var(--text)">Blog</a></li>
+      <li><a href="https://github.com/camgitt/proofagent">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <a class="back-link" href="/blog">&larr; Back to blog</a>
+
+  <article>
+    <h1>OpenAI Bought Astral. <strong>The Python Dev Stack Is Being Consolidated.</strong></h1>
+    <div class="article-meta">2026-03-19</div>
+
+    <p>Ten days ago, OpenAI acquired Promptfoo &mdash; the most popular open-source LLM evaluation tool. Today, they announced the acquisition of Astral, the company behind uv, ruff, and ty &mdash; the fastest-growing Python toolchain in years.</p>
+
+    <p>Let's lay out the timeline.</p>
+
+    <h2>The consolidation timeline</h2>
+
+    <ul class="timeline">
+      <li><strong>March 9, 2026</strong> &mdash; OpenAI acquires Promptfoo (LLM evaluation) for ~$86M</li>
+      <li><strong>March 14, 2026</strong> &mdash; Anthropic acquires Bun (JavaScript runtime)</li>
+      <li><strong>March 19, 2026</strong> &mdash; OpenAI acquires Astral (uv, ruff, ty &mdash; Python packaging, linting, type checking)</li>
+    </ul>
+
+    <p>In under two weeks, the two largest AI companies have bought three of the most popular open-source developer tools. The pattern is clear: AI labs are acquiring the developer toolchain, piece by piece.</p>
+
+    <h2>What OpenAI now owns in your Python workflow</h2>
+
+    <p>If you're a Python developer working with AI, here's what a single company now controls:</p>
+
+    <ul>
+      <li><strong>Package management</strong> &mdash; uv (via Astral)</li>
+      <li><strong>Linting</strong> &mdash; ruff (via Astral)</li>
+      <li><strong>Type checking</strong> &mdash; ty (via Astral)</li>
+      <li><strong>Model evaluation</strong> &mdash; Promptfoo</li>
+      <li><strong>The models themselves</strong> &mdash; GPT-4o, o3, etc.</li>
+      <li><strong>The coding agent</strong> &mdash; Codex</li>
+    </ul>
+
+    <p>Your package manager installs your dependencies. Your linter checks your code. Your type checker validates your types. Your eval tool scores your AI's output. And the company that makes the AI you're evaluating now owns all of those tools.</p>
+
+    <p>That's not a conspiracy theory. It's a supply chain.</p>
+
+    <h2>Why this matters for evaluation specifically</h2>
+
+    <p>Package managers and linters are largely objective tools. <code>uv install</code> either resolves dependencies correctly or it doesn't. <code>ruff</code> either catches the lint error or it doesn't. There's not much room for bias.</p>
+
+    <p>Evaluation is different. Eval tools make judgment calls. They decide whether a model's response is "safe enough," "accurate enough," or "good enough." They produce the scores that determine which model ships to production and which gets rejected.</p>
+
+    <p>When the eval tool and the model share an owner, the structural incentive for unbiased evaluation disappears. Not because anyone is being malicious &mdash; but because organizational gravity pulls everything toward alignment with the parent company's interests.</p>
+
+    <p>This is why <a href="/blog/promptfoo-alternative">we wrote about the Promptfoo acquisition</a> last week. And it's why the Astral acquisition makes the problem worse, not better. The more of the stack a single vendor owns, the harder it becomes to maintain independent judgment about any individual piece.</p>
+
+    <h2>The open-source safety net</h2>
+
+    <p>There is a genuine silver lining: uv, ruff, and ty are all permissively licensed (MIT/Apache 2.0). If OpenAI takes them in a direction the community doesn't want, they can be forked. The code isn't going anywhere.</p>
+
+    <p>But let's be honest about what forking actually requires. It requires someone to step up, maintain the fork, attract contributors, and sustain it without VC funding or a corporate parent. The HN comments on today's announcement are full of people saying "just fork it" &mdash; and notably short on people volunteering to do the forking.</p>
+
+    <p>The practical reality is that Astral's tools will remain the dominant versions, steered by OpenAI's priorities. For package management and linting, that's probably fine. For evaluation, it's a problem.</p>
+
+    <h2>What you can do</h2>
+
+    <p>You don't need to rip out uv or ruff. They're good tools and the immediate risk of enshittification is low. But you should think carefully about which parts of your stack need to be independent from model vendors.</p>
+
+    <p>Our recommendation:</p>
+
+    <ul>
+      <li><strong>Package management</strong> &mdash; keep using uv. It's the best option and the risk of bias is negligible.</li>
+      <li><strong>Linting and type checking</strong> &mdash; keep using ruff and ty. Same reasoning.</li>
+      <li><strong>Model evaluation</strong> &mdash; use an independent tool. This is where vendor neutrality actually matters.</li>
+    </ul>
+
+    <p>proofagent is vendor-neutral, MIT-licensed, runs entirely locally, and has zero telemetry. It's built for exactly this scenario: testing AI models without trusting the model vendor to grade its own homework.</p>
+
+<pre><code># Test any model's safety — no vendor lock-in
+pip install proofagent
+proofagent scan --provider openai --model gpt-4o
+proofagent scan --provider anthropic --model claude-sonnet-4-6
+proofagent scan --provider gemini --model gemini-2.5-flash</code></pre>
+
+    <h2>The bigger picture</h2>
+
+    <p>We're watching a consolidation pattern that should be familiar to anyone who remembers the browser wars, the mobile platform wars, or the cloud wars. The playbook is: build or buy the developer tools, make them the default, then leverage that position.</p>
+
+    <p>The AI labs aren't doing this because they're evil. They're doing it because controlling the developer experience is the most reliable path to controlling which models developers use. If Codex ships with uv and ruff and Promptfoo all pre-configured, the path of least resistance is to stay in the OpenAI ecosystem for everything &mdash; including model selection.</p>
+
+    <p>The antidote isn't paranoia. It's intentional independence where it counts. Use the best tool for the job, but keep your evaluation layer neutral. That's the one place where trusting the vendor is a structural conflict of interest.</p>
+  </article>
+
+  <div class="cta">
+    <p>Independent AI evaluation. No vendor lock-in. No configuration required.</p>
+    <code>pip install proofagent</code>
+    <p style="margin-top: 16px; margin-bottom: 0;"><a href="/quickstart" style="color: var(--accent); text-decoration: underline; font-size: 14px;">Read the quickstart guide &rarr;</a></p>
+  </div>
+
+  <footer>
+    <p>proofagent &mdash; <a href="https://github.com/camgitt/proofagent">open source</a></p>
+  </footer>
+</div>
+</body>
+</html>

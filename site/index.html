@@ -78,6 +78,22 @@
 
   .nav-links a:hover { color: var(--text); }
 
+  .star-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 12px !important;
+    color: var(--text-2) !important;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .star-btn:hover {
+    border-color: var(--text-3);
+    color: var(--text) !important;
+  }
+
   /* === HERO === */
   .hero { padding: 80px 0 48px; }
 
@@ -567,6 +583,7 @@
       <li><a href="/skills">Skills</a></li>
       <li><a href="/blog/">Blog</a></li>
       <li><a href="https://github.com/camgitt/proofagent">GitHub</a></li>
+      <li><a href="https://github.com/camgitt/proofagent" class="star-btn">&#9733; Star</a></li>
     </ul>
   </nav>
 
