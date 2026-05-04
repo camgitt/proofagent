@@ -36,6 +36,18 @@ proofagent scan claude-sonnet-4-6
 # Score: 10/10 (100%) — Grade: A+
 ```
 
+## Migrating from Promptfoo
+
+OpenAI acquired Promptfoo on 2026-03-09. If you'd rather not depend on an eval tool owned by a model vendor, proofagent has a one-command migration:
+
+```bash
+proofagent migrate-from-promptfoo promptfooconfig.yaml
+```
+
+It converts your existing YAML to real Python tests. Common assertion types map directly (contains, regex, similar, contains-json, contains-any, cost, latency). Anything that can't auto-port — `llm-rubric`, JavaScript assertions — is preserved as a `# TODO` comment so nothing is silently dropped.
+
+The output is just pytest. Run it with `pytest`. Use `pytest -n auto` for parallel. Everything you already know about pytest still works.
+
 ## Write custom tests
 
 ```python
