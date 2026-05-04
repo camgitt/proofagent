@@ -1214,3 +1214,58 @@ def snapshot_update(snapshot_dir):
     sd = Path(snapshot_dir) if snapshot_dir else None
     count = delete_all_snapshots(sd)
     click.echo(f"Cleared {count} snapshot(s). Next test run will create fresh snapshots.")
+
+
+@cli.command(name="migrate-from-promptfoo")
+@click.argument("config_path", type=click.Path(exists=True, dir_okay=False))
+@click.option("--out", "out_path", default=None, type=click.Path(), help="Output Python test file (default: tests/test_migrated_from_promptfoo.py)")
+def migrate_from_promptfoo(config_path, out_path):
+    """Convert a Promptfoo YAML config to a proofagent Python test module.
+
+    \b
+    Examples:
+        proofagent migrate-from-promptfoo promptfooconfig.yaml
+        proofagent migrate-from-promptfoo path/to/config.yaml --out tests/test_evals.py
+
+    Maps common assertion types directly (contains, regex, similar, contains-json,
+    cost, latency). Assertions that can't auto-port (llm-rubric, javascript, etc.)
+    are preserved as TODO comments so nothing is silently dropped.
+    """
+    from pathlib import Path
+
+    from proofagent.migrate import migrate_promptfoo
+
+    out = Path(out_path) if out_path else None
+    try:
+        result = migrate_promptfoo(Path(config_path), out)
+    except ImportError as e:
+        click.echo(f"\033[31m✗\033[0m {e}", err=True)
+        raise SystemExit(1)
+    except Exception as e:
+        click.echo(f"\033[31m✗\033[0m Migration failed: {e}", err=True)
+        raise SystemExit(1)
+
+    click.echo()
+    click.echo(f"  \033[1mproofagent migrate-from-promptfoo\033[0m")
+    click.echo()
+    click.echo(f"  \033[32m✓\033[0m Wrote {result.test_count} tests → {result.out_path}")
+    if result.skipped_tests:
+        click.echo(f"  \033[33m!\033[0m Skipped {result.skipped_tests} non-mapping test entries")
+
+    if result.handled:
+        click.echo()
+        click.echo("  \033[1mAssertions ported:\033[0m")
+        for kind, n in sorted(result.handled.items(), key=lambda kv: -kv[1]):
+            click.echo(f"    \033[32m✓\033[0m {kind}: {n}")
+
+    if result.unsupported:
+        click.echo()
+        click.echo("  \033[1mAssertions left as TODO:\033[0m")
+        for kind, n in sorted(result.unsupported.items(), key=lambda kv: -kv[1]):
+            click.echo(f"    \033[33m!\033[0m {kind}: {n}")
+        click.echo()
+        click.echo("  Open the file and search for 'TODO:' to finish those.")
+
+    click.echo()
+    click.echo(f"  Run them: \033[1mpytest {result.out_path}\033[0m")
+    click.echo()
