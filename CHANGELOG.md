@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.9.0 (2026-05-03)
+
+- **Promptfoo migration** — convert Promptfoo YAML configs to proofagent Python tests in one command:
+  - `proofagent migrate-from-promptfoo path/to/promptfooconfig.yaml [--out tests/test_x.py]`
+  - Auto-ports: contains, not-contains, icontains, regex, contains-json, similar (with threshold), contains-any, contains-all, cost, latency
+  - Preserves unsupported assertion types (llm-rubric, javascript, custom JS) as `# TODO` comments rather than silently dropping
+  - Inherits `defaultTest` assertions, supports per-test overrides, substitutes Jinja-style `{{var}}` placeholders
+  - 31 unit tests covering the migration logic + CLI integration
+- Context: OpenAI acquired Promptfoo on 2026-03-09. This command exists for users who want to migrate to a fully independent eval tool.
+
 ## 0.8.0 (2026-03-18)
 
 - **Skill proofs** — evaluate agent competence in coding, reasoning, math, writing, summarization
