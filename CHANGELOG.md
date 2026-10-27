@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Fix `test_migrate` CI failures: include PyYAML in the `dev` extra (and install
+  `.[dev,yaml]` in CI) so Promptfoo config parsing works in a clean venv.
+
 ## 0.9.0 (2026-05-03)
 
 - **Promptfoo migration** — convert Promptfoo YAML configs to proofagent Python tests in one command:
